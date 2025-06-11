@@ -1,0 +1,13 @@
+{
+    "name": "PMS",
+    "alias": "pms",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "App\\Modules\\PMS\\Providers\\PMSServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

@@ -1,0 +1,1405 @@
+@inject('menuRoles', '\App\Modules\User\Services\CheckUserRoles')
+@inject('dateconverter', '\App\Modules\Admin\Entities\DateConverter')
+
+@php
+    $currentRoute = Request::route()->getName();
+    $Route = explode('.', $currentRoute);
+
+    //get current nepali year and month
+    $calendarType = 'nep';
+    $nepDateArray = $dateconverter->eng_to_nep(date('Y'), date('m'), date('d'));
+    $nepYear = $nepDateArray['year'];
+    $nepMonth = $nepDateArray['month'];
+    //
+    $empId = optional(auth()->user()->userEmployer)->id;
+    $organizationId = optional(auth()->user()->userEmployer)->organization_id;
+
+@endphp
+<div class="sidebar-section">
+    <ul class="nav nav-sidebar" data-nav-type="accordion">
+
+        <li class="nav-item-header d-flex">
+            <div class="text-uppercase font-size-xs line-height-xs">Main</div> <i class="icon-menu" title="Main"></i>
+        </li>
+
+        <li class="nav-item">
+            <a href="{{ url('admin/dashboard') }}" class="nav-link @if ($Route[0] == 'dashboard') active @endif">
+                <i class="icon-home4"></i><span>Dashboard</span>
+            </a>
+        </li>
+
+        <li class="nav-item-header">
+            <div class="text-uppercase font-size-xs line-height-xs">Features</div> <i class="icon-menu"
+                title="Features"></i>
+        </li>
+
+        @if (auth()->user()->user_type == 'supervisor' || auth()->user()->user_type == 'employee')
+            @php
+                $condition = 'false';
+                if ($Route[0] == 'organization' || $Route[0] == 'employee') {
+                    $condition = 'true';
+                }
+            @endphp
+            <li class="nav-item nav-item-submenu {{ $condition == 'true' ? 'nav-item-open nav-item-expanded' : '' }}">
+                <a href="#" class="nav-link @if ($condition == 'true') active @endif">
+                    <i class="icon-office"></i> <span>Organization</span>
+                </a>
+                <ul class="nav nav-group-sub">
+                    <li class="nav-item">
+                        <a href="{{ route('organization.overview') }}"
+                            class="nav-link @if ($Route[0] == 'organization' && $Route[1] == 'overview') active @endif">
+                            <i class="icon-city"></i><span>Overview</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('employee.directory') }}"
+                            class="nav-link @if ($Route[0] == 'employee' && $Route[1] == 'directory') active @endif">
+                            <i class="icon-address-book2"></i><span>Employee Directory</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('organization.codeOfConduct') }}"
+                            class="nav-link @if ($Route[0] == 'organization' && $Route[1] == 'codeOfConduct') active @endif">
+                            <i class="icon-file-text3"></i><span>Code of Conduct</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        @else
+            @php
+                $condition = 'false';
+                if ($Route[0] == 'organization' || $Route[0] == 'branch') {
+                    $condition = 'true';
+                }
+            @endphp
+            <li class="nav-item nav-item-submenu {{ $condition == 'true' ? 'nav-item-open nav-item-expanded' : '' }}">
+                <a href="#" class="nav-link @if ($condition == 'true') active @endif">
+                    <i class="icon-city"></i> <span>Organization</span>
+                </a>
+                <ul class="nav nav-group-sub">
+                    <li class="nav-item">
+                        <a href="{{ route('organization.index') }}"
+                            class="nav-link @if ($Route[0] == 'organization' && $Route[1] == 'index') active @endif">
+                            <i class="icon-city"></i><span>List</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('branch.index') }}"
+                            class="nav-link @if ($Route[0] == 'branch' && $Route[1] == 'index') active @endif">
+                            <i class="icon-office"></i><span>Branch</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            @if ($menuRoles->assignedRoles('employee.index') || $menuRoles->assignedRoles('employee.directory'))
+                <li
+                    class='nav-item nav-item-submenu {{ $Route[0] == 'employee' ? 'nav-item-open nav-item-expanded' : '' }}'>
+                    <a href="#" class="nav-link @if ($Route[0] == 'mrf' || $Route[0] == 'applicant') active @endif">
+                        <i class="icon-users4"></i> <span>Employee</span>
+                    </a>
+                    <ul class="nav nav-group-sub">
+                        @if ($menuRoles->assignedRoles('employee.index'))
+                            <li class="nav-item">
+                                <a href="{{ route('employee.index') }}"
+                                    class="nav-link @if ($Route[0] == 'index') active @endif">
+                                    <i class="icon-users"></i><span>List</span>
+                                </a>
+                            </li>
+                        @endif
+                        @if ($menuRoles->assignedRoles('employee.approvalFlowReport'))
+                            <li class="nav-item">
+                                <a href="{{ route('employee.approvalFlowReport', ['type' => 'leave_attendance_document']) }}"
+                                    class="nav-link @if ($Route[0] == 'approvalFlowReport') active @endif">
+                                    <i class="icon-file-text3"></i><span>Approval Flow Report</span>
+                                </a>
+                            </li>
+                        @endif
+                        @if ($menuRoles->assignedRoles('employee.directory'))
+                            <li class="nav-item">
+                                <a href="{{ route('employee.directory') }}"
+                                    class="nav-link @if ($Route[0] == 'directory') active @endif">
+                                    <i class="icon-address-book2"></i><span>Directory</span>
+                                </a>
+                            </li>
+                        @endif
+                    </ul>
+                </li>
+            @endif
+        @endif
+
+        @if ($menuRoles->assignedRoles('leaveType.index') || $menuRoles->assignedRoles('leave.index'))
+            <li
+                class='nav-item nav-item-submenu {{ $Route[0] == 'leaveType' || $Route[0] == 'leave' ? 'nav-item-open nav-item-expanded' : '' }}'>
+                <a href="#" class="nav-link @if ($Route[0] == 'leaveType' || $Route[0] == 'leave') active @endif">
+                    <i class="icon-clipboard2"></i> <span>Leave</span>
+                </a>
+                <ul class="nav nav-group-sub">
+                    @if ($menuRoles->assignedRoles('leaveType.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('leaveType.index') }}"
+                                class="nav-link @if ($Route[0] == 'leaveType') active @endif">
+                                <i class="icon-clipboard3"></i><span>Leave Type</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('leave.index'))
+                        @if (auth()->user()->user_type == 'supervisor' || auth()->user()->user_type == 'employee')
+                            <li class="nav-item">
+                                <a href="{{ route('leave.create') }}"
+                                    class="nav-link @if ($Route[0] == 'leave' && $Route[1] == 'create') active @endif">
+                                    <i class="icon-hand"></i><span>Apply Leave</span>
+                                </a>
+                            </li>
+                        @endif
+                        @if (auth()->user()->user_type == 'supervisor')
+                            <li class="nav-item">
+                                <a href="{{ route('leave.showTeamleaves') }}"
+                                    class="nav-link @if ($Route[0] == 'leave' && $Route[1] == 'showTeamleaves') active @endif">
+                                    <i class="icon-hand"></i><span>Team Request</span>
+                                </a>
+                            </li>
+                        @endif
+                        @if (auth()->user()->user_type == 'supervisor')
+                            <li class="nav-item">
+                                <a href="{{ route('substituteLeave.teamRequest') }}"
+                                    class="nav-link @if ($Route[0] == 'substituteLeave' && $Route[1] == 'teamRequest') active @endif">
+                                    <i class="icon-hand"></i><span>Team Substitute Request</span>
+                                </a>
+                            </li>
+                        @endif
+                        @if ($menuRoles->assignedRoles('substituteLeave.index'))
+                            <li class="nav-item">
+                                <a href="{{ route('substituteLeave.index') }}"
+                                    class="nav-link @if ($Route[0] == 'substituteLeave' && $Route[1] == 'index') active @endif">
+                                    <i class="icon-file-text"></i><span>Claim Substitute Leave</span>
+                                </a>
+                            </li>
+                        @endif
+                        <li class="nav-item">
+                            <a href="{{ route('leave.index') }}"
+                                class="nav-link @if ($Route[0] == 'leave' && $Route[1] == 'index') active @endif">
+                                <i class="icon-clipboard2"></i><span>Leave History</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('leave.report'))
+                        <li class="nav-item">
+                            <a href="{{ route('leave.report') }}"
+                                class="nav-link @if ($Route[0] == 'leave' && $Route[1] == 'report') active @endif">
+                                <i class="icon-file-text3"></i><span>Report</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('leaveOpening.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('leaveOpening.index') }}"
+                                class="nav-link @if ($Route[0] == 'leaveOpening') active @endif">
+                                <i class="icon-file-text3"></i><span>Leave Summary</span>
+                            </a>
+                        </li>
+                    @endif
+                </ul>
+            </li>
+        @endif
+
+        @php
+            $condition = 'false';
+            if ($Route[0] == 'shift' || $Route[0] == 'shiftGroup' || $Route[0] == 'attendance' || $Route[0] == 'attendanceRequest' || $Route[0] == 'monthlyAttendance' || $Route[0] == 'monthlyAttendanceSummary' || $Route[0] == 'dailyAttendance') {
+                $condition = 'true';
+            }
+        @endphp
+        @if ($condition)
+            <li class="nav-item nav-item-submenu {{ $condition == 'true' ? 'nav-item-open nav-item-expanded' : '' }}">
+                <a href="#" class="nav-link {{ $condition == 'true' ? 'active' : '' }}">
+                    <i class="icon-touch"></i> <span>Attendance</span>
+                </a>
+                <ul class="nav nav-group-sub">
+                    @if ($menuRoles->assignedRoles('shift.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('shift.index') }}"
+                                class="nav-link @if ($Route[0] == 'shift') active @endif">
+                                <i class="icon-watch2"></i><span>Shift</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('shiftGroup.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('shiftGroup.index') }}"
+                                class="nav-link @if ($Route[0] == 'shiftGroup') active @endif">
+                                <i class="icon-grid52"></i><span>Shift Group</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('attendanceRequest.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('attendanceRequest.index') }}"
+                                class="nav-link @if ($Route[0] == 'attendanceRequest' && $Route[1] == 'index') active @endif">
+                                <i class="icon-hand"></i><span>Attendance Request</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if (auth()->user()->user_type == 'supervisor')
+                        <li class="nav-item">
+                            <a href="{{ route('attendanceRequest.showTeamAttendance') }}"
+                                class="nav-link @if ($Route[0] == 'attendanceRequest' && $Route[1] == 'showTeamAttendance') active @endif">
+                                <i class="icon-hand"></i><span>Team Request</span>
+                            </a>
+                        </li>
+                    @endif
+
+                    @if ($menuRoles->assignedRoles('regularAttendanceReport'))
+                        @php
+                            // $date_range = date('Y-m-d') . ' - ' . date('Y-m-d');
+                            $date_range = date('Y-m-d');
+
+                            // $date_range = date('Y-m-d', strtotime('-1 day')) . ' - ' . date('Y-m-d');
+
+                        @endphp
+                        <li class="nav-item">
+                            <a href="{{ route('regularAttendanceReport', ['date_range' => $date_range]) }}"
+                                class="nav-link @if ($Route[0] == 'regularAttendanceReport') active @endif">
+                                <i class="icon-stack"></i><span>Daily Attendance Report</span>
+                            </a>
+                        </li>
+                    @endif
+
+                    @if ($menuRoles->assignedRoles('dailyAttendance'))
+                        <li class="nav-item">
+                            @if ($empId && $organizationId)
+                                <a href="{{ route('dailyAttendance', ['org_id' => $organizationId, 'emp_id' => $empId, 'calendar_type' => $calendarType, 'nep_year' => $nepYear, 'nep_month' => $nepMonth]) }}"
+                                    class="nav-link @if ($Route[0] == 'dailyAttendance') active @endif">
+                                @else
+                                    <a href="{{ route('dailyAttendance') }}"
+                                        class="nav-link @if ($Route[0] == 'dailyAttendance') active @endif">
+                            @endif
+                            <i class="icon-calendar3"></i><span>Monthly Attendance Report</span>
+                            </a>
+                        </li>
+                    @endif
+
+                    @if ($menuRoles->assignedRoles('monthlyAttendanceSummary'))
+                        <li class="nav-item">
+                            <a href="{{ route('monthlyAttendanceSummary', ['calendar_type' => $calendarType, 'nep_year' => $nepYear, 'nep_month' => $nepMonth]) }}"
+                                class="nav-link @if ($Route[0] == 'monthlyAttendanceSummary') active @endif">
+                                <i class="icon-calendar52"></i><span>Attendance Summary</span>
+                            </a>
+                        </li>
+                    @endif
+
+                    @if ($menuRoles->assignedRoles('monthlyAttendance'))
+                        <li class="nav-item">
+                            @if ($empId && $organizationId)
+                                <a href="{{ route('monthlyAttendance', ['org_id' => $organizationId, 'emp_id' => $empId, 'calendar_type' => $calendarType, 'nep_year' => $nepYear, 'nep_month' => $nepMonth]) }}"
+                                    class="nav-link @if ($Route[0] == 'monthlyAttendance') active @endif">
+                                @else
+                                    <a href="{{ route('monthlyAttendance') }}"
+                                        class="nav-link @if ($Route[0] == 'monthlyAttendance') active @endif">
+                            @endif
+                            <i class="icon-touch"></i><span>Attendance Overview</span>
+                            </a>
+                        </li>
+                    @endif
+
+                    @if ($menuRoles->assignedRoles('viewAttendanceCalendar') && in_array(auth()->user()->user_type,['employee','hr','division_hr','supervisor']))
+                        {{-- @if ($menuRoles->assignedRoles('viewAttendanceCalendar')) --}}
+                        <li class="nav-item">
+                            <a href="{{ route('viewAttendanceCalendar') }}"
+                                class="nav-link @if ($Route[0] == 'viewAttendanceCalendar') active @endif">
+                                <i class="icon-calendar2"></i><span>View Calendar</span>
+                            </a>
+                        </li>
+                    @endif
+                </ul>
+            </li>
+        @endif
+
+        @if (
+            $menuRoles->assignedRoles('tada.index') ||
+                $menuRoles->assignedRoles('tadaType.index') ||
+                $menuRoles->assignedRoles('tadaRequest.index'))
+            <li
+                class='nav-item nav-item-submenu @if ($Route[0] == 'tada' || $Route[0] == 'tadaType' || $Route[0] == 'tadaRequest') nav-item-open nav-item-expanded @endif'>
+                <a href="#" class="nav-link @if ($Route[0] == 'tada' || $Route[0] == 'tadaType' || $Route[0] == 'tadaRequest') active @endif"><i
+                        class="icon-stack3"></i> <span>Claim & Request</span></a>
+                <ul class="nav nav-group-sub" data-submenu-title="PMS">
+                    @if ($menuRoles->assignedRoles('tadaType.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('tadaType.index') }}"
+                                class="nav-link @if ($Route[0] == 'tadaType') active @endif">
+                                <i class="icon-stack3"></i><span>Types</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('tada.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('tada.index') }}"
+                                class="nav-link @if ($Route[0] == 'tada' && $Route[1] == 'index') active @endif">
+                                <i class="icon-coins"></i><span>Claim</span>
+                            </a>
+                        </li>
+                    @endif
+
+                    @if ($menuRoles->assignedRoles('tada.showTeamClaim'))
+                        <li class="nav-item">
+                            <a href="{{ route('tada.showTeamClaim') }}"
+                                class="nav-link @if ($Route[0] == 'tada' && $Route[1] == 'showTeamClaim') active @endif">
+                                <i class="icon-coins"></i><span>Team Claim</span>
+                            </a>
+                        </li>
+                    @endif
+
+                    @if ($menuRoles->assignedRoles('tadaRequest.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('tadaRequest.index') }}"
+                                class="nav-link @if ($Route[0] == 'tadaRequest' && $Route[1] == 'index') active @endif">
+                                <i class="icon-coin-dollar"></i><span>Request</span>
+                            </a>
+                        </li>
+                    @endif
+
+                    @if ($menuRoles->assignedRoles('tadaRequest.showTeamRequest'))
+                        <li class="nav-item">
+                            <a href="{{ route('tadaRequest.showTeamRequest') }}"
+                                class="nav-link @if ($Route[0] == 'tadaRequest' && $Route[1] == 'showTeamRequest') active @endif">
+                                <i class="icon-coin-dollar"></i><span>Team Request</span>
+                            </a>
+                        </li>
+                    @endif
+
+                </ul>
+            </li>
+        @endif
+
+        @php
+            $condition = 'false';
+            if ($Route[0] == 'thresholdBenefitSetup' || $Route[0] == 'incomeSetup' || $Route[0] == 'deductionSetup' || $Route[0] == 'employeeSetup' || $Route[0] == 'taxSlab' || $Route[0] == 'payroll') {
+                $condition = 'true';
+            }
+        @endphp
+        @if ($condition)
+            <li class="nav-item nav-item-submenu {{ $condition == 'true' ? 'nav-item-open nav-item-expanded' : '' }}">
+                <a href="#" class="nav-link {{ $condition == 'true' ? 'active' : '' }}">
+                    <i class="icon-coins"></i> <span>Payroll Management</span>
+                </a>
+                <ul class="nav nav-group-sub" data-submenu-title="Payroll">
+                    @if ($menuRoles->assignedRoles('thresholdBenefitSetup.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('thresholdBenefitSetup.index') }}"
+                                class="nav-link @if ($Route[0] == 'thresholdBenefitSetup') active @endif">
+                                <i class="icon-coins"></i><span>Threshold Benefit Setup</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('taxSlab.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('taxSlab.index') }}"
+                                class="nav-link @if ($Route[0] == 'taxSlab') active @endif">
+                                <i class="icon-library2"></i><span>Tax Slab Setup</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('incomeSetup.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('incomeSetup.index') }}"
+                                class="nav-link @if ($Route[0] == 'incomeSetup') active @endif">
+                                <i class="icon-coins"></i><span>Income Setup</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('deductionSetup.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('deductionSetup.index') }}"
+                                class="nav-link @if ($Route[0] == 'deductionSetup') active @endif">
+                                <i class="icon-cash3"></i><span>Deduction Setup</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('employeeSetup.index'))
+                        <li
+                            class='nav-item nav-item-submenu  @if ($Route[0] == 'employeeSetup') nav-item-open nav-item-expanded @endif'>
+                            <a href="#" class="nav-link @if ($Route[0] == 'employeeSetup') active @endif"><i
+                                    class="icon-users"></i> <span>Employee Setup</span></a>
+                            <ul class="nav nav-group-sub">
+                                <li class="nav-item">
+                                    <a href="{{ route('employeeSetup.grossSalary') }}"
+                                        class="nav-link @if ($Route[0] == 'employeeSetup' && $Route[1] == 'grossSalary') active @endif ">
+                                        <i class="icon-coins"></i><span>Gross Salary</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('employeeSetup.income') }}"
+                                        class="nav-link @if ($Route[0] == 'employeeSetup' && $Route[1] == 'income') active @endif ">
+                                        <i class="icon-coins"></i><span>Income</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('employeeSetup.deduction') }}"
+                                        class="nav-link @if ($Route[0] == 'employeeSetup' && $Route[1] == 'deduction') active @endif">
+                                        <i class="icon-cash3"></i><span>Deduction</span>
+                                    </a>
+
+                                </li>
+                            </ul>
+
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('massIncrement.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('massIncrement.index') }}"
+                                class="nav-link @if ($Route[0] == 'massIncrement.index') active @endif">
+                                <i class="icon-briefcase" aria-hidden="true"></i><span>Mass Increment</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('arrearAdjustment.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('arrearAdjustment.index') }}"
+                                class="nav-link @if ($Route[0] == 'arrearAdjustment.index') active @endif">
+                                <i class="icon-cash3"></i><span>Arrear Adjustment</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('payroll.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('payroll.index') }}"
+                                class="nav-link @if ($Route[0] == 'payroll') active @endif">
+                                <i class="icon-list2"></i><span>Payroll List</span>
+                            </a>
+                        </li>
+                    @endif
+                </ul>
+            </li>
+        @endif
+
+        @php
+            $condition = 'false';
+            if ($Route[0] == 'advance') {
+                $condition = 'true';
+            }
+        @endphp
+        @if ($condition)
+            <li class="nav-item nav-item-submenu {{ $condition == 'true' ? 'nav-item-open nav-item-expanded' : '' }}">
+                <a href="#" class="nav-link">
+                    <i class="icon-coins"></i> <span>Advance Management</span>
+                </a>
+                <ul class="nav nav-group-sub" data-submenu-title="Payroll">
+                    @if ($menuRoles->assignedRoles('advance.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('advance.index') }}"
+                                class="nav-link @if ($Route[0] == 'advance' && $Route[1] == 'index') active @endif">
+                                <i class="icon-coins"></i><span>Advance</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('advance.paymentLedger'))
+                        <li class="nav-item">
+                            <a href="{{ route('advance.paymentLedger') }}"
+                                class="nav-link @if ($Route[0] == 'advance' && $Route[1] == 'paymentLedger') active @endif">
+                                <i class="icon-coins"></i><span>Payment Ledger</span>
+                            </a>
+                        </li>
+                    @endif
+                </ul>
+            </li>
+        @endif
+
+        @if ($menuRoles->assignedRoles('employee.pendingApproval'))
+            <li class="nav-item">
+                <a href="{{ route('employee.pendingApproval') }}"
+                    class="nav-link @if ($Route[0] == 'employee' && $Route[1] == 'pendingApproval') active @endif">
+                    <i class="icon-enter"></i><span>Pending Request</span>
+                </a>
+            </li>
+        @endif
+
+        @if ($menuRoles->assignedRoles('notice.index'))
+            <li class="nav-item">
+                <a href="{{ route('notice.index') }}"
+                    class="nav-link @if ($Route[0] == 'notice') active @endif">
+                    <i class="icon-info22"></i><span>Notice</span>
+                </a>
+            </li>
+        @endif
+
+        @php
+            $condition = 'false';
+            if ($Route[0] == 'event' || $Route[0] == 'holiday') {
+                $condition = 'true';
+            }
+        @endphp
+        @if ($condition)
+            <li class="nav-item nav-item-submenu {{ $condition == 'true' ? 'nav-item-open nav-item-expanded' : '' }}">
+                <a href="#" class="nav-link {{ $condition == 'true' ? 'active' : '' }}">
+                    <i class="icon-newspaper"></i> <span>Event & Holiday</span>
+                </a>
+                <ul class="nav nav-group-sub" data-submenu-title="Payroll">
+                    @if ($menuRoles->assignedRoles('event.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('event.index') }}"
+                                class="nav-link @if ($Route[0] == 'event') active @endif">
+                                <i class="icon-newspaper"></i><span>Event</span>
+                            </a>
+                        </li>
+                    @endif
+
+                    @if ($menuRoles->assignedRoles('holiday.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('holiday.index') }}"
+                                class="nav-link @if ($Route[0] == 'holiday') active @endif">
+                                <i class="icon-road"></i><span>Holiday</span>
+                            </a>
+                        </li>
+                    @endif
+                </ul>
+
+        @endif
+
+        @php
+            $worklogRoles = $Route[0] == 'worklog';
+        @endphp
+        @if ($menuRoles->assignedRoles('worklog.index'))
+            @if (auth()->user()->user_type == 'employee')
+                @if ($menuRoles->assignedRoles('worklog.index'))
+                    <li class="nav-item">
+                        <a href="{{ route('worklog.index') }}"
+                            class="nav-link @if ($Route[0] == 'worklog') active @endif">
+                            <i class="icon-stack-text"></i><span>Work Log</span>
+                        </a>
+                    </li>
+                @endif
+            @else
+                <li class='nav-item nav-item-submenu {{ $worklogRoles ? 'nav-item-open nav-item-expanded' : '' }} '>
+                    <a href="#" class="nav-link {{ $worklogRoles ? 'active' : '' }}"><i
+                            class="icon-stack-text"></i> <span>Work Log</span></a>
+                    <ul class="nav nav-group-sub" data-submenu-title="PMS">
+
+                        @if ($menuRoles->assignedRoles('worklog.index'))
+                            <li class="nav-item">
+                                <a href="{{ route('worklog.index') }}"
+                                    class="nav-link @if ($Route[0] == 'worklog') active @endif">
+                                    <i class="icon-stack-text"></i><span>List</span>
+                                </a>
+                            </li>
+                        @endif
+
+                    </ul>
+                </li>
+            @endif
+        @endif
+
+        @if ($menuRoles->assignedRoles('boardingTask.index'))
+            <li class="nav-item">
+                <a href="{{ route('boardingTask.index') }}"
+                    class="nav-link @if ($Route[0] == 'boardingTask') active @endif">
+                    <i class="icon-clipboard6"></i><span>Boarding Task</span>
+                </a>
+            </li>
+        @endif
+
+        @if ($menuRoles->assignedRoles('mrf.index'))
+            @php
+                $condition = 'false';
+                if ($Route[0] == 'mrf' || $Route[0] == 'applicant' || $Route[0] == 'interviewLevel' || $Route[0] == 'interview' || $Route[0] == 'evaluation' || $Route[0] == 'offerLetter' || $Route[0] == 'onboard') {
+                    $condition = 'true';
+                }
+            @endphp
+            <li class="nav-item nav-item-submenu {{ $condition == 'true' ? 'nav-item-open nav-item-expanded' : '' }}">
+                <a href="#" class="nav-link @if ($condition == 'true') active @endif">
+                    <i class="icon-books"></i> <span>Onboarding</span>
+                </a>
+                <ul class="nav nav-group-sub">
+                    @if ($menuRoles->assignedRoles('mrf.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('mrf.index') }}"
+                                class="nav-link @if ($Route[0] == 'mrf') active @endif">
+                                <i class="icon-design"></i><span>MRF</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('applicant.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('applicant.index') }}"
+                                class="nav-link @if ($Route[0] == 'applicant') active @endif">
+                                <i class="icon-users"></i><span>Applicant</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('interviewLevel.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('interviewLevel.index') }}"
+                                class="nav-link @if ($Route[0] == 'interviewLevel') active @endif">
+                                <i class="icon-question4"></i><span>Questionnaire</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('interview.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('interview.index') }}"
+                                class="nav-link @if ($Route[0] == 'interview') active @endif">
+                                <i class="icon-bubbles9"></i><span>Interview</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('evaluation.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('evaluation.index') }}"
+                                class="nav-link @if ($Route[0] == 'evaluation') active @endif">
+                                <i class="icon-pen2"></i><span>Evaluation</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('offerLetter.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('offerLetter.index') }}"
+                                class="nav-link @if ($Route[0] == 'offerLetter') active @endif">
+                                <i class="icon-profile"></i><span>Offer Letter</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('onboard.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('onboard.index') }}"
+                                class="nav-link @if ($Route[0] == 'onboard') active @endif">
+                                <i class="icon-user-check"></i><span>Onboard</span>
+                            </a>
+                        </li>
+                    @endif
+                </ul>
+            </li>
+        @endif
+
+        @if ($menuRoles->assignedRoles('resignation.index'))
+            @php
+                $condition = 'false';
+                if ($Route[0] == 'resignation' || $Route[0] == 'clearance') {
+                    $condition = 'true';
+                }
+            @endphp
+            <li class="nav-item nav-item-submenu {{ $condition == 'true' ? 'nav-item-open nav-item-expanded' : '' }}">
+                <a href="#" class="nav-link @if ($condition == 'true') active @endif">
+                    <i class="icon-cube4"></i> <span>Offboarding</span>
+                </a>
+                <ul class="nav nav-group-sub">
+                    @if ($menuRoles->assignedRoles('clearance.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('clearance.index') }}"
+                                class="nav-link @if ($Route[0] == 'clearance') active @endif">
+                                <i class="icon-bubble-lines4"></i><span>Clearance Setup</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if (auth()->user()->user_type == 'employee')
+                        <li class="nav-item">
+                            <a href="{{ route('resignation.create') }}"
+                                class="nav-link @if ($Route[0] == 'resignation' && $Route[1] == 'create') active @endif">
+                                <i class="icon-pen-minus"></i><span>Apply For Resignation</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('resignation.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('resignation.index') }}"
+                                class="nav-link @if ($Route[0] == 'resignation' && $Route[1] == 'index') active @endif">
+                                <i class="icon-pen-minus"></i><span>Resignation</span>
+                            </a>
+                        </li>
+                    @endif
+                </ul>
+            </li>
+        @endif
+
+        @if (
+            $menuRoles->assignedRoles('score.index') ||
+                $menuRoles->assignedRoles('competenceLibrary.index') ||
+                $menuRoles->assignedRoles('competence.index') ||
+                $menuRoles->assignedRoles('appraisal.index') ||
+                $menuRoles->assignedRoles('questionnaire.index') ||
+                $menuRoles->assignedRoles('appraisalReport.index') ||
+                $menuRoles->assignedRoles('performanceEvaluationSummary'))
+            <li
+                class='nav-item nav-item-submenu {{ $Route[0] == 'setup' || $Route[0] == 'score' || $Route[0] == 'competenceLibrary' || $Route[0] == 'competence' || $Route[0] == 'appraisal' || $Route[0] == 'appraisalReport' || $Route[0] == 'ratingScale' || $Route[0] == 'questionnaire' || $Route[0] == 'appraisal' || $Route[0] == 'performanceEvaluationSummary' ? 'nav-item-open nav-item-expanded' : '' }}'>
+                <a href="#" class="nav-link @if (
+                    $Route[0] == 'setup' ||
+                        $Route[0] == 'score' ||
+                        $Route[0] == 'competenceLibrary' ||
+                        $Route[0] == 'competence' ||
+                        $Route[0] == 'appraisal' ||
+                        $Route[0] == 'appraisalReport' ||
+                        $Route[0] == 'ratingScale' ||
+                        $Route[0] == 'questionnaire') active @endif">
+                    <i class="icon-medal-first "></i> <span>Appraisal</span>
+                </a>
+                <ul class="nav nav-group-sub">
+
+                    @if ($menuRoles->assignedRoles('score.index'))
+                        <li
+                            class='nav-item nav-item-submenu  @if ($Route[0] == 'score' || $Route[0] == 'ratingScale' || $Route[0] == 'competenceLibrary' || $Route[0] == 'competence') nav-item-open nav-item-expanded @endif'>
+                            <a href="#" class="nav-link @if (
+                                $Route[0] == 'score' ||
+                                    $Route[0] == 'ratingScale' ||
+                                    $Route[0] == 'competenceLibrary' ||
+                                    $Route[0] == 'competence' ||
+                                    $Route[0] == 'score') active @endif"><i
+                                    class="icon-users"></i> <span>Setup</span></a>
+                            <ul class="nav nav-group-sub">
+                                @if ($menuRoles->assignedRoles('score.index'))
+                                    <li class="nav-item">
+                                        <a href="{{ route('score.index') }}"
+                                            class="nav-link @if ($Route[0] == 'score' && $Route[1] == 'index') active @endif">
+                                            <i class="icon-square-up"></i><span>Score Management</span>
+                                        </a>
+                                    </li>
+                                @endif
+                                @if ($menuRoles->assignedRoles('ratingScale.index'))
+                                    <li class="nav-item">
+                                        <a href="{{ route('ratingScale.index') }}"
+                                            class="nav-link @if ($Route[0] == 'ratingScale' && $Route[1] == 'index') active @endif">
+                                            <i class="icon-stats-bars2 "></i><span>Appraisal Rating Scale</span>
+                                        </a>
+                                    </li>
+                                @endif
+                                {{-- @if ($menuRoles->assignedRoles('competenceLibrary.index'))
+                                    <li class="nav-item">
+                                        <a href="{{ route('competenceLibrary.index') }}"
+                                            class="nav-link @if ($Route[0] == 'competenceLibrary' && $Route[1] == 'index') active @endif">
+                                            <i class="icon-books"></i><span>Competence Library</span>
+                                        </a>
+                                    </li>
+                                @endif --}}
+
+                                @if ($menuRoles->assignedRoles('competence.index'))
+                                    <li class="nav-item">
+                                        <a href="{{ route('competence.index') }}"
+                                            class="nav-link @if ($Route[0] == 'competence' && $Route[1] == 'index') active @endif">
+                                            <i class="icon-books"></i><span>Competencies</span>
+                                        </a>
+                                    </li>
+                                @endif
+
+
+                                @if ($menuRoles->assignedRoles('questionnaire.index'))
+                                    <li class="nav-item">
+                                        <a href="{{ route('questionnaire.index') }}"
+                                            class="nav-link @if ($Route[0] == 'questionnaire' && $Route[1] == 'index') active @endif">
+                                            <i class="icon-question4"></i><span>Set Form</span>
+                                        </a>
+                                    </li>
+                                @endif
+
+                            </ul>
+
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('appraisal.index'))
+                        <li
+                            class='nav-item nav-item-submenu  @if ($Route[0] == 'appraisal' || $Route[0] == 'performanceEvaluationSummary') nav-item-open nav-item-expanded @endif'>
+                            <a href="#" class="nav-link @if ($Route[0] == 'appraisal' || $Route[0] == 'performanceEvaluationSummary') active @endif"><i
+                                    class="icon-cogs"></i> <span>Roll Out</span></a>
+                            <ul class="nav nav-group-sub">
+                                @if ($menuRoles->assignedRoles('appraisal.index'))
+                                    <li class="nav-item">
+                                        <a href="{{ route('appraisal.index') }}"
+                                            class="nav-link @if ($Route[0] == 'appraisal') active @endif">
+                                            <i class="icon-cash"></i><span>Appraisal</span>
+                                        </a>
+                                    </li>
+                                @endif
+
+
+                                {{-- @if ($menuRoles->assignedRoles('appraisalReport'))
+                            <li class="nav-item">
+                                <a href="{{ route('appraisalReport') }}"
+                                    class="nav-link @if ($Route[0] == 'appraisalReport') active @endif">
+                                    <i class="icon-stats-bars2 "></i><span>Appraisal Report</span>
+                                </a>
+                            </li>
+                        @endif --}}
+
+                                @if ($menuRoles->assignedRoles('performanceEvaluationSummary'))
+                                    <li class="nav-item">
+                                        <a href="{{ route('performanceEvaluationSummary') }}"
+                                            class="nav-link @if ($Route[0] == 'performanceEvaluationSummary') active @endif">
+                                            <i class="icon-stats-bars2 "></i><span>Appraisal Report</span>
+                                        </a>
+                                    </li>
+                                @endif
+
+                            </ul>
+
+                        </li>
+                    @endif
+
+
+                </ul>
+            </li>
+        @endif
+
+        @if (
+            $menuRoles->assignedRoles('kra.index') ||
+                $menuRoles->assignedRoles('kpi.index') ||
+                $menuRoles->assignedRoles('target.index') ||
+                $menuRoles->assignedRoles('employee-target.view') ||
+                $menuRoles->assignedRoles('PMSViewFinalReport'))
+            <li
+                class='nav-item nav-item-submenu @if (
+                    $Route[0] == 'kra' or
+                        $Route[0] == 'kpi' or
+                        $Route[0] == 'target' or
+                        $Route[0] == 'employee-target' or
+                        $Route[0] == 'PMSViewFinalReport') nav-item-open nav-item-expanded @endif'>
+                <a href="#" class="nav-link @if ($Route[0] == 'kra' or $Route[0] == 'kpi' or $Route[0] == 'target') active @endif"><i
+                        class="icon-stats-growth"></i> <span>PMS</span></a>
+                <ul class="nav nav-group-sub" data-submenu-title="PMS">
+                    <li
+                        class='nav-item nav-item-submenu  @if (
+                            $Route[0] == 'kra' ||
+                                $Route[0] == 'kpi' ||
+                                $Route[0] == 'target' ||
+                                $Route[0] == 'employee-target.view' ||
+                                $Route[0] == 'PMSViewFinalReport') nav-item-open nav-item-expanded @endif'>
+                        <a href="#" class="nav-link @if ($Route[0] == 'kra' || $Route[0] == 'kpi' || $Route[0] == 'target') active @endif"><i
+                                class="icon-users"></i> <span>Setup</span></a>
+                        <ul class="nav nav-group-sub">
+                            @if ($menuRoles->assignedRoles('kra.index'))
+                                <li class="nav-item">
+                                    <a href="{{ route('kra.index') }}"
+                                        class="nav-link @if ($Route[0] == 'kra' && $Route[1] == 'index') active @endif">
+                                        <i class="icon-cog4"></i><span>KRA</span>
+                                    </a>
+                                </li>
+                            @endif
+                            @if ($menuRoles->assignedRoles('kpi.index'))
+                                <li class="nav-item">
+                                    <a href="{{ route('kpi.index') }}"
+                                        class="nav-link @if ($Route[0] == 'kpi') active @endif">
+                                        <i class="icon-cogs"></i><span>KPI</span>
+                                    </a>
+                                </li>
+                            @endif
+                            @if ($menuRoles->assignedRoles('target.index'))
+                                <li class="nav-item">
+                                    <a href="{{ route('target.index') }}"
+                                        class="nav-link @if ($Route[0] == 'target') active @endif">
+                                        <i class="icon-target"></i><span>Target</span>
+                                    </a>
+                                </li>
+                            @endif
+                            @if ($menuRoles->assignedRoles('set-form.index'))
+                                <li class="nav-item">
+                                    <a href="{{ route('set-form.index') }}"
+                                        class="nav-link @if ($Route[0] == 'setForm') active @endif">
+                                        <i class="icon-cog52"></i><span>Set Form</span>
+                                    </a>
+                                </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @if ($menuRoles->assignedRoles('PMSViewFinalReport'))
+                        <li class="nav-item">
+                            <a href="{{ route('PMSViewFinalReport') }}"
+                                class="nav-link @if ($Route[0] == 'PMSViewFinalReport') active @endif">
+                                <i class="icon-eye"></i><span>View Final Report</span>
+                            </a>
+                        </li>
+                    @endif
+                    {{-- <li
+                        class='nav-item nav-item-submenu  @if ($Route[0] == 'employee-target.view' || $Route[0] == 'PMSViewFinalReport') nav-item-open nav-item-expanded @endif'>
+                        <a href="#" class="nav-link @if ($Route[0] == 'employee-target.view' || $Route[0] == 'PMSViewFinalReport') active @endif"><i
+                                class="icon-cogs"></i> <span>Roll Out</span></a>
+                        <ul class="nav nav-group-sub">
+                            @if ($menuRoles->assignedRoles('employee-target.view'))
+                                <li class="nav-item">
+                                    <a href="{{ route('employee-target.view') }}"
+                                        class="nav-link @if ($Route[0] == 'employee-target') active @endif">
+                                        <i class="icon-list2"></i><span>View Employee Target</span>
+                                    </a>
+                                </li>
+                            @endif
+
+                            @if ($menuRoles->assignedRoles('PMSViewFinalReport'))
+                                <li class="nav-item">
+                                    <a href="{{ route('PMSViewFinalReport') }}"
+                                        class="nav-link @if ($Route[0] == 'PMSViewFinalReport') active @endif">
+                                        <i class="icon-eye"></i><span>View Final Report</span>
+                                    </a>
+                                </li>
+                            @endif
+                        </ul>
+                    </li> --}}
+                </ul>
+            </li>
+        @endif
+
+        @if ($menuRoles->assignedRoles('training.index') || $menuRoles->assignedRoles('training-report'))
+            <li
+                class='nav-item nav-item-submenu @if ($Route[0] == 'training' or $Route[0] == 'training-report') nav-item-open nav-item-expanded @endif'>
+                <a href="#" class="nav-link @if ($Route[0] == 'training' or $Route[0] == 'training-report') active @endif"><i
+                        class="icon-collaboration"></i> <span>Training</span></a>
+                <ul class="nav nav-group-sub" data-submenu-title="Training">
+
+                    @if ($menuRoles->assignedRoles('training.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('training.index') }}"
+                                class="nav-link @if ($Route[0] == 'training') active @endif">
+                                <i class="icon-reading"></i><span>Training</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('training-report'))
+                        <li class="nav-item">
+                            <a href="{{ route('training-report') }}"
+                                class="nav-link @if ($Route[0] == 'training-report') active @endif">
+                                <i class="icon-eye"></i><span>View Report</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('training-MIS-report'))
+                        <li class="nav-item">
+                            <a href="{{ route('training-MIS-report') }}"
+                                class="nav-link @if ($Route[0] == 'training-MIS-report') active @endif">
+                                <i class="icon-stack"></i><span>MIS Report</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('training-attendees-detail-report'))
+                        <li class="nav-item">
+                            <a href="{{ route('training-attendees-detail-report') }}"
+                                class="nav-link @if ($Route[0] == 'training-attendees-detail-report') active @endif">
+                                <i class="icon-stack"></i><span>Attendees Detail Report</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('training-annual-calendar-report'))
+                        <li class="nav-item">
+                            <a href="{{ route('training-annual-calendar-report') }}"
+                                class="nav-link @if ($Route[0] == 'training-annual-calendar-report') active @endif">
+                                <i class="icon-stack"></i><span> Annual Training Report</span>
+                            </a>
+                        </li>
+                    @endif
+
+                </ul>
+            </li>
+        @endif
+
+        @if ($menuRoles->assignedRoles('document.index') || $menuRoles->assignedRoles('shared-list.document'))
+            <li
+                class='nav-item nav-item-submenu @if ($Route[0] == 'document' or $Route[0] == 'shared-list') nav-item-open nav-item-expanded @endif'>
+                <a href="#" class="nav-link @if ($Route[0] == 'document' or $Route[0] == 'shared-list') active @endif"><i
+                        class="icon-folder"></i> <span>Document</span></a>
+                <ul class="nav nav-group-sub" data-submenu-title="Document">
+
+                    @if ($menuRoles->assignedRoles('document.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('document.index') }}"
+                                class="nav-link @if ($Route[0] == 'document') active @endif">
+                                <i class="icon-folder"></i><span>My Document</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('shared-list.document'))
+                        <li class="nav-item">
+                            <a href="{{ route('shared-list.document') }}"
+                                class="nav-link @if ($Route[0] == 'shared-list') active @endif">
+                                <i class="icon-eye"></i><span>Shared With Me</span>
+                            </a>
+                        </li>
+                    @endif
+                </ul>
+            </li>
+        @endif
+
+        @if (
+            $menuRoles->assignedRoles('cheatSheet.index') ||
+                $menuRoles->assignedRoles('templateType.index') ||
+                $menuRoles->assignedRoles('template.index'))
+            <li
+                class='nav-item nav-item-submenu @if ($Route[0] == 'cheatSheet' or $Route[0] == 'templateType' or $Route[0] == 'template') nav-item-open nav-item-expanded @endif'>
+                <a href="#" class="nav-link @if ($Route[0] == 'cheatSheet' or $Route[0] == 'templateType' or $Route[0] == 'template') active @endif"><i
+                        class="icon-stack-empty"></i> <span>Templates</span></a>
+                <ul class="nav nav-group-sub" data-submenu-title="PMS">
+                    @if ($menuRoles->assignedRoles('cheatSheet.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('cheatSheet.index') }}"
+                                class="nav-link @if ($Route[0] == 'cheatSheet') active @endif">
+                                <i class="icon-info22"></i><span>Cheat Sheet</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('templateType.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('templateType.index') }}"
+                                class="nav-link @if ($Route[0] == 'templateType') active @endif">
+                                <i class="icon-menu5"></i><span>Template Type</span>
+                            </a>
+                        </li>
+                    @endif
+
+                    @if ($menuRoles->assignedRoles('template.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('template.index') }}"
+                                class="nav-link @if ($Route[0] == 'template') active @endif">
+                                <i class="icon-file-text"></i><span>Template</span>
+                            </a>
+                        </li>
+                    @endif
+
+                </ul>
+            </li>
+        @endif
+
+        @php
+            $condition = false;
+            if ($Route[0] == 'mrfApprovalFlow' || $Route[0] == 'leaveDeductionSetup') {
+                $condition = true;
+            }
+        @endphp
+        @if ($menuRoles->assignedRoles('mrfApprovalFlow.index') || $menuRoles->assignedRoles('leaveDeductionSetup.index'))
+            {{-- || $menuRoles->assignedRoles('hierarchySetup.index')) --}}
+            <li class="nav-item nav-item-submenu {{ $condition == true ? 'nav-item-open nav-item-expanded' : '' }}">
+                <a href="#" class="nav-link {{ $condition == true ? 'active' : '' }}">
+                    <i class="icon-cogs"></i> <span>Setup</span>
+                </a>
+                <ul class="nav nav-group-sub">
+                    @if ($menuRoles->assignedRoles('mrfApprovalFlow.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('mrfApprovalFlow.index') }}"
+                                class="nav-link @if ($Route[0] == 'mrfApprovalFlow') active @endif">
+                                <i class="icon-ladder"></i><span>MRF Approval Flow</span>
+                            </a>
+                        </li>
+                    @endif
+
+                    {{-- @if ($menuRoles->assignedRoles('hierarchySetup.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('hierarchySetup.index') }}"
+                                class="nav-link @if ($Route[0] == 'hierarchySetup') active @endif">
+                                <i class="icon-ladder"></i><span>Hierarchy</span>
+                            </a>
+                        </li>
+                    @endif --}}
+
+                    @if ($menuRoles->assignedRoles('leaveDeductionSetup.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('leaveDeductionSetup.index') }}"
+                                class="nav-link @if ($Route[0] == 'leaveDeductionSetup') active @endif">
+                                <i class="icon-cog3"></i><span>Leave Deduction Setup</span>
+                            </a>
+                        </li>
+                    @endif
+                </ul>
+            </li>
+        @endif
+
+        @if ($menuRoles->assignedRoles('grievance.index'))
+            <li class="nav-item">
+                <a href="{{ route('grievance.index') }}"
+                    class="nav-link @if ($Route[0] == 'grievance') active @endif">
+                    <i class="icon-clipboard6"></i><span>Grievance List</span>
+                </a>
+            </li>
+        @endif
+
+        @php
+            $bulkUploadCondition = 'false';
+            if ($Route[0] == 'bulkupload') {
+                $bulkUploadCondition = 'true';
+            }
+        @endphp
+        @if ($bulkUploadCondition)
+            <li
+                class="nav-item nav-item-submenu {{ $bulkUploadCondition == 'true' ? 'nav-item-open nav-item-expanded' : '' }}">
+                <a href="#" class="nav-link">
+                    <i class="icon-folder-open"></i> <span>Bulk Upload Management</span>
+                </a>
+                <ul class="nav nav-group-sub" data-submenu-title="Bulk Upload Management">
+                    @if ($menuRoles->assignedRoles('bulkupload.familyDetail'))
+                        <li class="nav-item">
+                            <a href="{{ route('bulkupload.familyDetail') }}"
+                                class="nav-link {{ isset($Route[1]) && $Route[1] == 'familyDetail' ? 'active' : 'inactive' }}">
+                                <i class="icon-file-spreadsheet2"></i><span>Family Detail</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('bulkupload.emergencyDetail'))
+                        <li class="nav-item">
+                            <a href="{{ route('bulkupload.emergencyDetail') }}"
+                                class="nav-link {{ isset($Route[1]) && $Route[1] == 'emergencyDetail' ? 'active' : 'inactive' }}">
+                                <i class="icon-file-spreadsheet2"></i><span>Emergency Detail</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('bulkupload.benefitDetail'))
+                        <li class="nav-item">
+                            <a href="{{ route('bulkupload.benefitDetail') }}"
+                                class="nav-link {{ isset($Route[1]) && $Route[1] == 'benefitDetail' ? 'active' : 'inactive' }}">
+                                <i class="icon-file-spreadsheet2"></i><span>Benefit Detail</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('bulkupload.bankDetail'))
+                        <li class="nav-item">
+                            <a href="{{ route('bulkupload.bankDetail') }}"
+                                class="nav-link {{ isset($Route[1]) && $Route[1] == 'bankDetail' ? 'active' : 'inactive' }}">
+                                <i class="icon-file-spreadsheet2"></i><span>Bank Detail</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('bulkupload.educationDetail'))
+                        <li class="nav-item">
+                            <a href="{{ route('bulkupload.educationDetail') }}"
+                                class="nav-link {{ isset($Route[1]) && $Route[1] == 'educationDetail' ? 'active' : 'inactive' }}">
+                                <i class="icon-file-spreadsheet2"></i><span>Education Detail</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('bulkupload.previousJobDetail'))
+                        <li class="nav-item">
+                            <a href="{{ route('bulkupload.previousJobDetail') }}"
+                                class="nav-link {{ isset($Route[1]) && $Route[1] == 'previousJobDetail' ? 'active' : 'inactive' }}">
+                                <i class="icon-file-spreadsheet2"></i><span>Previous Job Detail</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('bulkupload.contractDetail'))
+                        <li class="nav-item">
+                            <a href="{{ route('bulkupload.contractDetail') }}"
+                                class="nav-link {{ isset($Route[1]) && $Route[1] == 'contractDetail' ? 'active' : 'inactive' }}">
+                                <i class="icon-file-spreadsheet2"></i><span>Contract Detail</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('bulkupload.medicalDetail'))
+                        <li class="nav-item">
+                            <a href="{{ route('bulkupload.medicalDetail') }}"
+                                class="nav-link {{ isset($Route[1]) && $Route[1] == 'medicalDetail' ? 'active' : 'inactive' }}">
+                                <i class="icon-file-spreadsheet2"></i><span>Medical Detail</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('bulkupload.leaveDetail'))
+                        <li class="nav-item">
+                            <a href="{{ route('bulkupload.leaveDetail') }}"
+                                class="nav-link {{ isset($Route[1]) && $Route[1] == 'leaveDetail' ? 'active' : 'inactive' }}">
+                                <i class="icon-file-spreadsheet2"></i><span>Leave Detail</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('bulkupload.researchDetail'))
+                        <li class="nav-item">
+                            <a href="{{ route('bulkupload.researchDetail') }}"
+                                class="nav-link {{ isset($Route[1]) && $Route[1] == 'researchDetail' ? 'active' : 'inactive' }}">
+                                <i class="icon-file-spreadsheet2"></i><span>Research & Publication Detail</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('bulkupload.visaImmigrationDetail'))
+                        <li class="nav-item">
+                            <a href="{{ route('bulkupload.visaImmigrationDetail') }}"
+                                class="nav-link {{ isset($Route[1]) && $Route[1] == 'visaImmigrationDetail' ? 'active' : 'inactive' }}">
+                                <i class="icon-file-spreadsheet2"></i><span>Visa & Immigration Detail</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('bulkupload.attendanceLog'))
+                        <li class="nav-item">
+                            <a href="{{ route('bulkupload.attendanceLog') }}"
+                                class="nav-link {{ isset($Route[1]) && $Route[1] == 'attendanceLog' ? 'active' : 'inactive' }}">
+                                <i class="icon-file-spreadsheet2"></i><span>Attendance Log</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('bulkupload.performanceDetail'))
+                        <li class="nav-item">
+                            <a href="{{ route('bulkupload.performanceDetail') }}"
+                                class="nav-link {{ isset($Route[1]) && $Route[1] == 'performanceDetail' ? 'active' : 'inactive' }}">
+                                <i class="icon-file-spreadsheet2"></i><span>Performance Detail</span>
+                            </a>
+                        </li>
+                    @endif
+                </ul>
+            </li>
+        @endif
+
+        {{-- Asset Module Start --}}
+        @if (
+            $menuRoles->assignedRoles('asset.index') ||
+                $menuRoles->assignedRoles('assetQuantity.index') ||
+                $menuRoles->assignedRoles('assetAllocate.index'))
+            @php
+                $condition = 'false';
+                if ($Route[0] == 'asset' || $Route[0] == 'assetQuantity' || $Route[0] == 'assetAllocate') {
+                    $condition = 'true';
+                }
+            @endphp
+            <li
+                class="nav-item nav-item-submenu {{ $condition == 'true' ? 'nav-item-open nav-item-expanded' : '' }}">
+                <a href="#" class="nav-link">
+                    <i class="icon-section"></i> <span>Asset Management</span>
+                </a>
+                <ul class="nav nav-group-sub">
+                    @if ($menuRoles->assignedRoles('asset.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('asset.index') }}"
+                                class="nav-link @if ($Route[0] == 'asset') active @endif">
+                                <i class="icon-diff-added"></i><span>Assets</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('assetQuantity.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('assetQuantity.index') }}"
+                                class="nav-link @if ($Route[0] == 'assetQuantity') active @endif">
+                                <i class="icon-list-numbered"></i><span>Stocks</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('assetAllocate.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('assetAllocate.index') }}"
+                                class="nav-link @if ($Route[0] == 'assetAllocate') active @endif">
+                                <i class="icon-people"></i><span>Allocate</span>
+                            </a>
+                        </li>
+                    @endif
+                </ul>
+            </li>
+        @endif
+        {{-- Asset Module End --}}
+
+         {{-- Poll Start --}}
+         @if ($menuRoles->assignedRoles('poll.index'))
+         @php
+             $condition = 'false';
+             if ($Route[0] == 'poll') {
+                 $condition = 'true';
+             }
+         @endphp
+         <li
+             class="nav-item nav-item-submenu {{ $condition == 'true' ? 'nav-item-open nav-item-expanded' : '' }}">
+             <a href="#" class="nav-link">
+                 <i class="icon-megaphone"></i> <span>Poll Management</span>
+             </a>
+             <ul class="nav nav-group-sub">
+                 @if ($menuRoles->assignedRoles('poll.index'))
+                     <li class="nav-item">
+                         <a href="{{ route('poll.index') }}"
+                             class="nav-link @if ($Route[0] == 'poll' && $Route[0] == 'index') active @endif">
+                             <i class="icon-diff-added"></i><span>Polls</span>
+                         </a>
+                     </li>
+                 @endif
+
+                 @if ($menuRoles->assignedRoles('poll.viewReport'))
+                     <li class="nav-item">
+                         <a href="{{ route('poll.viewReport', ['status'=>'active']) }}"
+                             class="nav-link @if ($Route[0] == 'poll' && $Route[1] == 'viewReport') active @endif">
+                             <i class="icon-stats-bars2"></i><span>View Report</span>
+                         </a>
+                     </li>
+                 @endif
+             </ul>
+         </li>
+     @endif
+     {{--  Poll End --}}
+
+        {{-- Survey Start --}}
+        @if ($menuRoles->assignedRoles('survey.index'))
+            @php
+                $condition = 'false';
+                if ($Route[0] == 'survey') {
+                    $condition = 'true';
+                }
+            @endphp
+            <li
+                class="nav-item nav-item-submenu {{ $condition == 'true' ? 'nav-item-open nav-item-expanded' : '' }}">
+                <a href="#" class="nav-link">
+                    <i class="icon-clipboard6"></i> <span>Survey Management</span>
+                </a>
+                <ul class="nav nav-group-sub">
+                    @if ($menuRoles->assignedRoles('survey.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('survey.index') }}"
+                                class="nav-link @if ($Route[0] == 'survey' && $Route[0] == 'index') active @endif">
+                                <i class="icon-diff-added"></i><span>Surveys</span>
+                            </a>
+                        </li>
+                    @endif
+
+                    @if ($menuRoles->assignedRoles('survey.allocationList'))
+                        <li class="nav-item">
+                            <a href="{{ route('survey.allocationList') }}"
+                                class="nav-link @if ($Route[0] == 'survey' && $Route[1] == 'allocationList') active @endif">
+                                <i class="icon-task"></i><span>Survey Allocations</span>
+                            </a>
+                        </li>
+                    @endif
+                </ul>
+            </li>
+        @endif
+        {{--  Survey End --}}
+
+        @if (
+            $menuRoles->assignedRoles('setting.create') ||
+                $menuRoles->assignedRoles('approvalFlow.index') ||
+                $menuRoles->assignedRoles('deviceManagement.index'))
+            <li
+                class='nav-item nav-item-submenu @if (
+                    $Route[0] == 'setting' ||
+                        $Route[0] == 'approvalFlow' ||
+                        $Route[0] == 'deviceManagement' ||
+                        $Route[0] == 'festivalAllowance.create') nav-item-open nav-item-expanded @endif'>
+                <a href="#" class="nav-link @if (
+                    $Route[0] == 'setting' ||
+                        $Route[0] == 'approvalFlow' ||
+                        $Route[0] == 'deviceManagement' ||
+                        $Route[0] == 'festivalAllowance.create') active @endif">
+                    <i class="icon-cog4"></i> <span>Setting</span>
+                </a>
+                <ul class="nav nav-group-sub">
+                    @if ($menuRoles->assignedRoles('setting.create'))
+                        <li class="nav-item">
+                            <a href="{{ route('setting.create') }}"
+                                class="nav-link @if ($Route[0] == 'setting') active @endif">
+                                <i class="icon-cog4"></i><span>General</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('deviceManagement.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('deviceManagement.index') }}"
+                                class="nav-link @if ($Route[0] == 'deviceManagement') active @endif">
+                                <i class="icon-multitouch"></i><span>Biometric Device</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('approvalFlow.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('approvalFlow.index') }}"
+                                class="nav-link @if ($Route[0] == 'approvalFlow') active @endif">
+                                <i class="icon-users2"></i><span>Approval Flow</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($menuRoles->assignedRoles('fiscalYearSetup.index'))
+                        <li class="nav-item">
+                            <a href="{{ route('fiscalYearSetup.index') }}"
+                                class="nav-link @if ($Route[0] == 'fiscalYearSetup') active @endif">
+                                <i class="icon-calendar"></i><span>Fiscal Year</span>
+                            </a>
+                        </li>
+                    @endif
+
+                    @if ($menuRoles->assignedRoles('festivalAllowance.create'))
+                        <li class="nav-item">
+                            <a href="{{ route('festivalAllowance.create') }}"
+                                class="nav-link @if ($Route[0] == 'festivalAllowance') active @endif">
+                                <i class="icon-calendar"></i><span>Festival Allowance</span>
+                            </a>
+                        </li>
+                    @endif
+                </ul>
+            </li>
+        @endif
+    </ul>
+</div>

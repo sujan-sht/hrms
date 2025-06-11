@@ -1,0 +1,14 @@
+{
+    "name": "Tada",
+    "alias": "tada",
+    "description": "",
+    "keywords": [],
+    "active": 1,
+    "order": 0,
+    "providers": [
+        "App\\Modules\\Tada\\Providers\\TadaServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

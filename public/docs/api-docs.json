@@ -1,0 +1,1867 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "HRMS API",
+        "description": "Here goes description",
+        "version": "0.1.9"
+    },
+    "servers": [
+        {
+            "url": "https://hrms-master.bidhee.net/api/v1",
+            "description": "Https Production  server"
+        },
+        {
+            "url": "https://{client}.bidheehrms.com/api/v1",
+            "description": "Https Production  server",
+            "variables": {
+                "client": {
+                    "default": "demo",
+                    "description": "this value is assigned by the service provider, in this example `hbd`"
+                }
+            }
+        },
+        {
+            "url": "http://localhost:8000/api/v1",
+            "description": "local server"
+        }
+    ],
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
+    },
+    "paths": {
+        "/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "description": "Login to the user",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "username": {
+                                        "type": "string",
+                                        "example": "user@name.com"
+                                    },
+                                    "password": {
+                                        "type": "password",
+                                        "example": "cms"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successfully Logged in"
+                    },
+                    "500": {
+                        "description": "Username or password invalid"
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "description": "Logout user",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully Loggout"
+                    },
+                    "500": {
+                        "description": "Something went wrong"
+                    }
+                }
+            }
+        },
+        "/dashboard": {
+            "get": {
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Returns a list of notices, pending approvals and events.",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        // "description": "A JSON array of",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/dashboard/get-calendar-event-holiday": {
+            "get": {
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Returns a list of event and holidays",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/attendance/store": {
+            "post": {
+                "summary": "Attendance Check In and Check Out",
+                "tags": [
+                    "Dashboard"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "long": {
+                                        "type": "string",
+                                        "example": 7
+                                    },
+                                    "lat": {
+                                        "type": "string",
+                                        "example": 1
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "example": "check_in"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successfully Created"
+                    },
+                    "401": {
+                        "description": "UnAuthenticated"
+                    },
+                    "500": {
+                        "description": "Something Went Wrong"
+                    }
+                }
+            }
+        },
+        "/user/profile": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "User Profile.",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/user/update": {
+            "post": {
+                "summary": "User Update",
+                "tags": [
+                    "User"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "first_name": {
+                                        "type": "string",
+                                        "example": 7
+                                    },
+                                    "middle_name": {
+                                        "type": "string",
+                                        "example": 1
+                                    },
+                                    "last_name": {
+                                        "type": "string",
+                                        "example": ""
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successfully Updated"
+                    },
+                    "401": {
+                        "description": "UnAuthenticated"
+                    },
+                    "500": {
+                        "description": "Something Went Wrong"
+                    }
+                }
+            }
+        },
+        "/user/change-password": {
+            "post": {
+                "summary": "User Update",
+                "tags": [
+                    "User"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "old_password": {
+                                        "type": "string",
+                                        "example": "**"
+                                    },
+                                    "confirm_password": {
+                                        "type": "string",
+                                        "example": "**"
+                                    },
+                                    "new_password": {
+                                        "type": "string",
+                                        "example": "**"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successfully Updated"
+                    },
+                    "401": {
+                        "description": "UnAuthenticated"
+                    },
+                    "500": {
+                        "description": "Something Went Wrong"
+                    }
+                }
+            }
+        },
+        "/user/notification": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "User Notification",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/organization/overview": {
+            "get": {
+                "tags": [
+                    "Organization"
+                ],
+                "summary": "Organization Overview",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/organization/directory": {
+            "get": {
+                "tags": [
+                    "Organization"
+                ],
+                "summary": "Organization Employee Directory",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/organization/code-of-conduct": {
+            "get": {
+                "tags": [
+                    "Organization"
+                ],
+                "summary": "Organization Code of Conduct",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/employee/list": {
+            "get": {
+                "tags": [
+                    "Employee"
+                ],
+                "summary": "List of Employees.",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/employee/family-detail": {
+            "get": {
+                "tags": [
+                    "Employee"
+                ],
+                "summary": "List of Family Detail Employees.",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/employee/asset-detail": {
+            "get": {
+                "tags": [
+                    "Employee"
+                ],
+                "summary": "List of Asset Detail Employees.",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/employee/emergency-detail": {
+            "get": {
+                "tags": [
+                    "Employee"
+                ],
+                "summary": "List of Emergency Detail Employees.",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/employee/benefit-detail": {
+            "get": {
+                "tags": [
+                    "Employee"
+                ],
+                "summary": "List of Benefit Detail Employees.",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/employee/education-detail": {
+            "get": {
+                "tags": [
+                    "Employee"
+                ],
+                "summary": "List of Education Detail Employees.",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/employee/previous-job-detail": {
+            "get": {
+                "tags": [
+                    "Employee"
+                ],
+                "summary": "List of Previous Job Detail Employees.",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/employee/bank-detail": {
+            "get": {
+                "tags": [
+                    "Employee"
+                ],
+                "summary": "List of Bank Detail Employees.",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/employee/contract-detail": {
+            "get": {
+                "tags": [
+                    "Employee"
+                ],
+                "summary": "List of Contract Detail Employees.",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/employee/document-detail": {
+            "get": {
+                "tags": [
+                    "Employee"
+                ],
+                "summary": "List of Document Detail Employees.",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/employee/medical-detail": {
+            "get": {
+                "tags": [
+                    "Employee"
+                ],
+                "summary": "List of Medical Detail Employees.",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/leave/dropdown": {
+            "get": {
+                "tags": [
+                    "Leave"
+                ],
+                "summary": "Leave Dropdown",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/leave/remaining": {
+            "get": {
+                "tags": [
+                    "Leave"
+                ],
+                "summary": "Remaining Leave.",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A JSON array of Remaining Leave",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/leave/leave-detail/{id}": {
+            "get": {
+                "summary": "Leave Detail ",
+                "tags": [
+                    "Leave"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "description": "The Id of Leave"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get Leave Detail from Leave Category [1=> Full Leave , 2 => Half Leave]"
+                    }
+                }
+            }
+        },
+        "/leave/store": {
+            "post": {
+                "summary": "Leave Create",
+                "tags": [
+                    "Leave"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "leave_kind": {
+                                        "type": "integer",
+                                        "example": 7
+                                    },
+                                    "leave_type_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "half_type": {
+                                        "type": "integer",
+                                        "example": 2
+                                    },
+                                    "date": {
+                                        "type": "date",
+                                        "example": "OK"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successfully Created"
+                    },
+                    "401": {
+                        "description": "UnAuthenticated"
+                    },
+                    "500": {
+                        "description": "Something Went Wrong"
+                    }
+                }
+            }
+        },
+        "/leave/history": {
+            "get": {
+                "summary": "Leave History ",
+                "tags": [
+                    "Leave"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get Leave History"
+                    }
+                }
+            }
+        },
+        "/leave/view/{id}": {
+            "get": {
+                "summary": "Leave View ",
+                "tags": [
+                    "Leave"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "description": "The Id of Leave"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get Leave View"
+                    }
+                }
+            }
+        },
+        "/leave/pre-process-data": {
+            "get": {
+                "summary": "Leave Pre Process Data ",
+                "tags": [
+                    "Leave"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "leaveType",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "startDate",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "employeeId",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "maxDays",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get Pre Process Leave Data"
+                    }
+                }
+            }
+        },
+        "/leave/post-process-data": {
+            "get": {
+                "summary": "Leave Pre Process Data ",
+                "tags": [
+                    "Leave"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "leaveType",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "employeeId",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "startDate",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "endDate",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get Post Process Leave Data"
+                    }
+                }
+            }
+        },
+        "/attendance/dropdown": {
+            "get": {
+                "summary": "Attendance Dropdown Lists",
+                "tags": [
+                    "Attendance"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Attendance Dropdown Lists"
+                    }
+                }
+            }
+        },
+        "/attendance/today-attendance": {
+            "get": {
+                "summary": "Get Today Attendance",
+                "tags": [
+                    "Attendance"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful"
+                    }
+                }
+            }
+        },
+        "/attendance/overview": {
+            "get": {
+                "summary": "Get Attendance overview",
+                "tags": [
+                    "Attendance"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "calendar_type",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "description": "Calendar Type: [nep , eng]"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "nep_year",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "description": "Nepali Year"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "nep_month",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "description": "Nepali Month"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/attendance/request": {
+            "get": {
+                "summary": "Get Attendance Request",
+                "tags": [
+                    "Attendance"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful"
+                    }
+                }
+            }
+        },
+        "/attendance/request/view/{id}": {
+            "get": {
+                "summary": "Get Attendance Request View",
+                "tags": [
+                    "Attendance"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "description": "Attendance request ID"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful"
+                    }
+                }
+            }
+        },
+        "/attendance/request/store": {
+            "post": {
+                "summary": "Attendance Request Create",
+                "tags": [
+                    "Attendance"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "date": {
+                                        "type": "date",
+                                        "example": 7
+                                    },
+                                    "time": {
+                                        "type": "time",
+                                        "example": 1
+                                    },
+                                    "type": {
+                                        "type": "integer",
+                                        "example": 2
+                                    },
+                                    "detail": {
+                                        "type": "string",
+                                        "example": "OK"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successfully Created"
+                    },
+                    "401": {
+                        "description": "UnAuthenticated"
+                    },
+                    "500": {
+                        "description": "Something Went Wrong"
+                    }
+                }
+            }
+        },
+        "/claim/dropdown": {
+            "get": {
+                "tags": [
+                    "Claim"
+                ],
+                "summary": "Claim Dropdown",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/claim": {
+            "get": {
+                "tags": [
+                    "Claim"
+                ],
+                "summary": "Claim Lists",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/claim/store": {
+            "post": {
+                "summary": "Claim Create",
+                "tags": [
+                    "Claim"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": {
+                                        "type": "integer",
+                                        "example": 7
+                                    },
+                                    "eng_from_date": {
+                                        "type": "date",
+                                        "example": "2023-01-01"
+                                    },
+                                    "eng_to_date": {
+                                        "type": "date",
+                                        "example": "2023-01-02"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successfully Created"
+                    },
+                    "401": {
+                        "description": "UnAuthenticated"
+                    },
+                    "500": {
+                        "description": "Something Went Wrong"
+                    }
+                }
+            }
+        },
+        "/claim/view/{id}": {
+            "get": {
+                "summary": "Claim View ",
+                "tags": [
+                    "Claim"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "description": "The Id of Leave"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get Claim View"
+                    }
+                }
+            }
+        },
+        "/claim/{id}/edit": {
+            "put": {
+                "summary": "Claim Edit",
+                "tags": [
+                    "Claim"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": {
+                                        "type": "integer",
+                                        "example": 7
+                                    },
+                                    "eng_from_date": {
+                                        "type": "date",
+                                        "example": "2023-01-01"
+                                    },
+                                    "eng_to_date": {
+                                        "type": "date",
+                                        "example": "2023-01-02"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successfully Updated"
+                    },
+                    "401": {
+                        "description": "UnAuthenticated"
+                    },
+                    "500": {
+                        "description": "Something Went Wrong"
+                    }
+                }
+            }
+        },
+        "/claim/delete/{id}": {
+            "delete": {
+                "summary": "Claim Delete ",
+                "tags": [
+                    "Claim"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "description": "The Id of Leave"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted Succesfully"
+                    }
+                }
+            }
+        },
+        "/request": {
+            "get": {
+                "tags": [
+                    "Request"
+                ],
+                "summary": "Request Lists",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/request/dropdown": {
+            "get": {
+                "tags": [
+                    "Request"
+                ],
+                "summary": "Request Dropdown",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/request/store": {
+            "post": {
+                "summary": "Request Create",
+                "tags": [
+                    "Request"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": {
+                                        "type": "integer",
+                                        "example": 7
+                                    },
+                                    "eng_from_date": {
+                                        "type": "date",
+                                        "example": "2023-01-01"
+                                    },
+                                    "eng_to_date": {
+                                        "type": "date",
+                                        "example": "2023-01-02"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successfully Created"
+                    },
+                    "401": {
+                        "description": "UnAuthenticated"
+                    },
+                    "500": {
+                        "description": "Something Went Wrong"
+                    }
+                }
+            }
+        },
+        "/request/view/{id}": {
+            "get": {
+                "summary": "Request View ",
+                "tags": [
+                    "Request"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "description": "The Id of Leave"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get Request View"
+                    }
+                }
+            }
+        },
+        "/request/{id}/edit": {
+            "put": {
+                "summary": "Request Edit",
+                "tags": [
+                    "Request"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": {
+                                        "type": "integer",
+                                        "example": 7
+                                    },
+                                    "eng_from_date": {
+                                        "type": "date",
+                                        "example": "2023-01-01"
+                                    },
+                                    "eng_to_date": {
+                                        "type": "date",
+                                        "example": "2023-01-02"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successfully Updated"
+                    },
+                    "401": {
+                        "description": "UnAuthenticated"
+                    },
+                    "500": {
+                        "description": "Something Went Wrong"
+                    }
+                }
+            }
+        },
+        "/request/delete/{id}": {
+            "delete": {
+                "summary": "Request Delete ",
+                "tags": [
+                    "Request"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "description": "The Id of Request"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted Succesfully"
+                    }
+                }
+            }
+        },
+        "/work-log": {
+            "get": {
+                "tags": [
+                    "Work Log"
+                ],
+                "summary": "Work Log Lists",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/work-log/dropdown": {
+            "get": {
+                "tags": [
+                    "Work Log"
+                ],
+                "summary": "Work Log Dropdown Lists",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/work-log/store": {
+            "post": {
+                "summary": "Store Work Log",
+                "tags": [
+                    "Work Log"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    // "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "work log"
+                                    },
+                                    "project_id": {
+                                        "type": "project_id",
+                                        "example": "01:00"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "example": "2023-01-01"
+                                    },
+                                    "date": {
+                                        "type": "date",
+                                        "example": "2023-01-01"
+                                    },
+                                    "hours": {
+                                        "type": "string",
+                                        "example": "01:00"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successfully Created"
+                    },
+                    "401": {
+                        "description": "UnAuthenticated"
+                    },
+                    "500": {
+                        "description": "Something Went Wrong"
+                    }
+                }
+            }
+        },
+        "/work-log/view/{id}": {
+            "get": {
+                "tags": [
+                    "Work Log"
+                ],
+                "summary": "Work Log Dropdown Lists",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "description": "The Id of Leave"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/work-log/{id}/edit": {
+            "put": {
+                "summary": "Edit Work Log",
+                "tags": [
+                    "Work Log"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "description": "The Id of Leave"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "work log"
+                                    },
+                                    "project_id": {
+                                        "type": "project_id",
+                                        "example": "01:00"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "example": "2023-01-01"
+                                    },
+                                    "date": {
+                                        "type": "date",
+                                        "example": "2023-01-01"
+                                    },
+                                    "hours": {
+                                        "type": "string",
+                                        "example": "01:00"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successfully Created"
+                    },
+                    "401": {
+                        "description": "UnAuthenticated"
+                    },
+                    "500": {
+                        "description": "Something Went Wrong"
+                    }
+                }
+            }
+        },
+        "/work-log/delete/{id}": {
+            "delete": {
+                "tags": [
+                    "Work Log"
+                ],
+                "summary": "Work Log Delete",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "description": "The Id of Leave"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

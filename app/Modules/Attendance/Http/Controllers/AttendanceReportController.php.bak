@@ -1,0 +1,425 @@
+<?php
+
+namespace App\Modules\Attendance\Http\Controllers;
+
+use App\Modules\Admin\Entities\DateConverter;
+use App\Modules\Attendance\Repositories\AttendanceInterface;
+use App\Modules\Attendance\Repositories\AttendanceReportInterface;
+use App\Modules\Attendance\Repositories\AttendanceReportRepository;
+use App\Modules\Attendance\Repositories\AttendanceRequestInterface;
+use App\Modules\Branch\Repositories\BranchInterface;
+use App\Modules\Employee\Entities\Employee;
+use App\Modules\Employee\Entities\EmployeeApprovalFlow;
+use App\Modules\Employee\Repositories\EmployeeInterface;
+use App\Modules\Organization\Repositories\OrganizationInterface;
+use Carbon\Carbon;
+use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
+
+class AttendanceReportController extends Controller
+{
+    protected $attendance;
+    protected $attendanceReport;
+    protected $employees;
+    protected $organization;
+    protected $attendanceRequest;
+    protected $branch;
+
+    public function __construct(AttendanceInterface $attendance, EmployeeInterface $employees, AttendanceReportInterface $attendanceReport, OrganizationInterface $organization, AttendanceRequestInterface $attendanceRequest, BranchInterface $branch)
+    {
+        $this->attendance = $attendance;
+        $this->employees = $employees;
+        $this->organization = $organization;
+        $this->attendanceReport = $attendanceReport;
+        $this->attendanceRequest = $attendanceRequest;
+        $this->branch = $branch;
+    }
+
+    //Attendance Overview
+    public function monthlyAttendance(Request $request)
+    {
+        $filter = $request->all();
+        $data['show'] = false;
+        $calendarType = $request->calendar_type;
+        $dateConverter = new DateConverter();
+        // $data['field'] = 'nepali_date';
+
+        if (isset($calendarType)) {
+            $year = $calendarType == 'eng' ? $request->eng_year : $request->nep_year;
+            $month = $calendarType == 'eng' ? $request->eng_month : $request->nep_month;
+
+            $data['show'] = true;
+            $data['field'] = $calendarType == 'eng' ? 'date' : 'nepali_date';
+            $data['year'] = $year;
+            $data['month'] = $month;
+            $data['calendarType'] = $calendarType;
+            if ($calendarType == 'nep') {
+                $data['days'] = $dateConverter->getTotalDaysInMonth($year, $month);
+            } else {
+                $data['days'] = Carbon::parse($year . '-' . $month)->daysInMonth;
+            }
+
+            //Update no. of days of current month
+            if ($data['calendarType'] == 'eng' && $data['year'] == date('Y') && $data['month'] == date('n')) {
+                $data['days'] = date('d');
+            } elseif ($data['calendarType'] == 'nep') {
+                $nepDateArray = date_converter()->eng_to_nep(date('Y'), date('m'), date('d'));
+                if ($data['year'] == $nepDateArray['year'] && $data['month'] == $nepDateArray['month']) {
+                    $data['days'] = $nepDateArray['date'];
+                }
+            }
+            //
+
+            //Check valid year and month
+            $checkDate = [
+                'calendarType' => $calendarType,
+                'year' => $year,
+                'month' => $month,
+            ];
+            $getDate = $this->restrictFutureDate($checkDate);
+            if ($getDate) {
+                $data['emps'] = $this->attendanceReport->employeeAttendance($data, $filter);
+            } else {
+                $data['emps'] = [];
+            }
+            //
+        }
+
+        $list = $this->attendanceReport->getEmployeeOrganizationListBasedOnRole();
+        $data['employeeData'] = $list['employeeData'];
+        $data['employees'] = $list['employees'];
+        $data['organizationList'] = $list['organizationList'];
+        $data['branchList'] = $this->branch->getList();
+
+        $data['eng_years'] = $dateConverter->getEngYears();
+        $data['nep_years'] = $dateConverter->getNepYears();
+        $data['eng_months'] = $dateConverter->getEngMonths();
+        $data['nep_months'] = $dateConverter->getNepMonths();
+        $data['type'] = $this->attendanceRequest->getTypes();
+
+        return view('attendance::monthly-attendance.index', $data);
+    }
+    //
+
+    //Attendance Summary
+    public function monthlyAttendanceSummary(Request $request)
+    {
+        $filter = $request->all();
+
+        $data['show'] = false;
+        $calendarType = $request->calendar_type;
+        $dateConverter = new DateConverter();
+        // $data['field'] = 'nepali_date';
+
+        $data['columns'] = [
+            'working_days' => 'Total Working Days', 'dayoffs' => 'Week Off', 'public_holiday' => 'Public Holidays', 'working_hour' => 'Total Working Hours', 'worked_days' => 'Total Worked Days',
+            'worked_hour' => 'Total Worked Hours', 'leave_taken' => 'Total Leave Taken', 'paid_leave_taken' => 'Total Paid Leave Taken', 'unpaid_leave_taken' => 'Total Unpaid Leave Taken'
+        ];
+
+        if (isset($calendarType)) {
+            $year = $calendarType == 'eng' ? $request->eng_year : $request->nep_year;
+            $month = $calendarType == 'eng' ? $request->eng_month : $request->nep_month;
+
+            $data['show'] = true;
+            $data['field'] = $calendarType == 'eng' ? 'date' : 'nepali_date';
+            if ($calendarType == 'nep') {
+                $data['days'] = $dateConverter->getTotalDaysInMonth($year, $month);
+            } else {
+                $data['days'] = Carbon::parse($year . '-' . $month)->daysInMonth;
+            }
+            $data['year'] = $year;
+            $data['month'] = $month;
+
+            //Check valid year and month
+            $checkDate = [
+                'calendarType' => $calendarType,
+                'year' => $year,
+                'month' => $month,
+            ];
+            $getDate = $this->restrictFutureDate($checkDate);
+            if ($getDate) {
+                $data['emps'] = $this->attendanceReport->monthlyAttendanceSummary($data, $filter);
+            } else {
+                $data['emps'] = [];
+            }
+            //
+        }
+
+        $list = $this->attendanceReport->getEmployeeOrganizationListBasedOnRole();
+        $data['employeeData'] = $list['employeeData'];
+        $data['employees'] = $list['employees'];
+        $data['organizationList'] = $list['organizationList'];
+        $data['branchList'] = $this->branch->getList();
+
+        $data['eng_years'] = $dateConverter->getEngYears();
+        $data['nep_years'] = $dateConverter->getNepYears();
+        $data['eng_months'] = $dateConverter->getEngMonths();
+        $data['nep_months'] = $dateConverter->getNepMonths();
+        return view('attendance::monthly-attendance-summary.index', $data);
+    }
+    //
+
+    //Monthly Attendance Report
+    public function dailyAttendance(Request $request)
+    {
+
+        $filter = $request->all();
+        $data['show'] = false;
+        $calendar_type = $request->calendar_type;
+        $dateConverter = new DateConverter();
+        // $data['field'] = 'nepali_date';
+
+        if (isset($calendar_type)) {
+            $year = $calendar_type == 'eng' ? $request->eng_year : $request->nep_year;
+            $month = $calendar_type == 'eng' ? $request->eng_month : $request->nep_month;
+            $data['show'] = true;
+            $data['field'] = $calendar_type == 'eng' ? 'date' : 'nepali_date';
+            $data['year'] = $year;
+            $data['month'] = $month;
+            $data['calendarType'] = $calendar_type;
+
+            if ($calendar_type == 'nep') {
+                $data['days'] = $dateConverter->getTotalDaysInMonth($year, $month);
+            } else {
+                $data['days'] = Carbon::parse($year . '-' . $month)->daysInMonth;
+            }
+
+            //Update no. of days of current month
+            if ($data['calendarType'] == 'eng' && $data['year'] == date('Y') && $data['month'] == date('n')) {
+                $data['days'] = date('d');
+            } elseif ($data['calendarType'] == 'nep') {
+                $nepDateArray = date_converter()->eng_to_nep(date('Y'), date('m'), date('d'));
+                if ($data['year'] == $nepDateArray['year'] && $data['month'] == $nepDateArray['month']) {
+                    $data['days'] = $nepDateArray['date'];
+                }
+            }
+            //
+
+            $checkDate = [
+                'calendarType' => $calendar_type,
+                'year' => $year,
+                'month' => $month,
+            ];
+            $getDate = $this->restrictFutureDate($checkDate);
+            if ($getDate) {
+                $data['emps'] = $this->attendanceReport->employeeAttendance($data, $filter);
+            } else {
+                $data['emps'] = [];
+            }
+        }
+
+        if (auth()->user()->user_type == 'super_admin' || auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'hr') {
+            $data['employees'] = $this->employees->getList();
+            $data['organizationList'] = $this->organization->getList();
+            $data['branchList'] = $this->branch->getList();
+        }
+        $data['eng_years'] = $dateConverter->getEngYears();
+        $data['nep_years'] = $dateConverter->getNepYears();
+        $data['eng_months'] = $dateConverter->getEngMonths();
+        $data['nep_months'] = $dateConverter->getNepMonths();
+        return view('attendance::daily-attendance.index', $data);
+    }
+    //
+
+    //Daily attendance report
+    public function regularAttendanceReport(Request $request)
+    {
+        $data['filter'] = $filter = $request->all();
+        $sort = [
+            'by' => 'id',
+            'sort' => 'DESC'
+        ];
+        // $data['emps'] = $this->attendanceReport->employeeRegularAttendanceData(20, $filter, $sort);
+        // dd($data['emps']);
+        if (auth()->user()->user_type == 'super_admin' || auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'hr') {
+            $data['employees'] = $this->employees->getList();
+            $data['organizationList'] = $this->organization->getList();
+            $data['branchList'] = $this->branch->getList();
+        }
+        return view('attendance::regular-attendance.index', $data);
+    }
+
+    public function regularAttendanceReportByAjax(Request $request)
+    {
+        // $data=[];
+        if ($request->ajax()) {
+            $data = $this->getFilter($request);
+            $data_arr = $this->prepareDataTable($data['records'], $request);
+            $response = array(
+                "draw" => intval($request->get('draw')),
+                "iTotalRecords" => $data['totalRecords'],
+                "iTotalDisplayRecords" => $data['totalRecordswithFilter'],
+                "aaData" => $data_arr,
+            );
+
+            echo json_encode($response);
+        }
+    }
+
+    private function prepareDataTable($employees, $request)
+    {
+        $filter = ($request->all());
+        // dd($filter['data']);
+
+        foreach ($filter['data'] as $data) {
+            if ($data['name'] == 'date_range' && isset($data['value'])) {
+                $filterDates = explode(' - ', $data['value']);
+                $startDate = $filterDates[0];
+                $endDate = $filterDates[1];
+            }
+        }
+
+        $data = [];
+        foreach ($employees as $key => $emp) {
+            $fullDate = $startDate;
+
+            $total_working_hr = '';
+            $checkin = '';
+            $checkout = '';
+
+            $atd = $emp->getSingleAttendance('date', $fullDate);
+            if ($atd) {
+                $total_working_hr = $atd->total_working_hr;
+                $checkin = $atd->checkin;
+                $checkout = $atd->checkout;
+            }
+            $status = (new AttendanceReportRepository())->checkStatus($emp, 'date', $fullDate);
+
+            $data[] =
+                [
+                    'name' => $emp->full_name,
+                    'date' => $fullDate,
+                    'day' => date('l',strtotime($fullDate)),
+                    'checkin' => $checkin,
+                    'checkout' => $checkout,
+                    'status' => $status,
+                    'working_hr' => $total_working_hr,
+                ];
+        }
+        return $data;
+    }
+
+    public function getFilter($request)
+    {
+        $filters = $request;
+        $start = $request->get("start");
+        $rowperpage = $request->get("length"); // total number of rows per page
+
+        $columnIndex_arr = $request->get('order');
+        $columnName_arr = $request->get('columns');
+        $order_arr = $request->get('order');
+        $search_arr = $request->get('search');
+
+        $columnIndex = $columnIndex_arr[0]['column']; // Column index
+        $columnName = $columnName_arr[$columnIndex]['data']; // Column name
+        $columnSortOrder = $order_arr[0]['dir']; // asc or desc
+        $default_order_column = $order_arr[0]['column'];
+        $searchValue = $search_arr['value']; // Search value
+
+        $data['draw'] = $request->get('draw');
+
+        $query = Employee::query();
+
+        if (isset($filter['org_id']) && $filter['org_id'] != '') {
+            $query = $query->where('organization_id', $filter['org_id']);
+        }
+
+        if (isset($filter['branch_id']) && $filter['branch_id'] != '') {
+            $query = $query->where('branch_id', $filter['branch_id']);
+        }
+
+        if (isset($filter['emp_id']) && $filter['emp_id'] != '') {
+            $query = $query->where('id', $filter['emp_id']);
+        }
+        // $employees = $query->where('status', 1);
+
+        $records = $query->skip($start)->take($rowperpage)->latest()->get();
+
+        $filtered_count = $query->count();
+
+        $data['totalRecords'] = $filtered_count;
+        $data['totalRecordswithFilter'] =  $filtered_count;
+        $data['records'] = $records;
+        return $data;
+    }
+    //
+    public function restrictFutureDate($checkDate)
+    {
+        if ($checkDate['calendarType'] == 'nep') {
+            $nepDateArray = date_converter()->eng_to_nep(date('Y'), date('m'), date('d'));
+            if ($checkDate['year'] > $nepDateArray['year']) {
+                toastr()->error('Invalid Year');
+                return false;
+            } elseif ($checkDate['year'] == $nepDateArray['year'] && $checkDate['month'] > $nepDateArray['month']) {
+                toastr()->error('Invalid Month');
+                return false;
+            }
+        } elseif ($checkDate['calendarType'] == 'eng') {
+            if ($checkDate['year'] > date('Y')) {
+                toastr()->error('Invalid Year');
+                return false;
+            } elseif ($checkDate['year'] == date('Y') && $checkDate['month'] > date('n')) {
+                toastr()->error('Invalid Month');
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public function viewAttendanceCalendar()
+    {
+        return view('attendance::calendar.view');
+    }
+
+    public function getCalendarAttendanceByAjax(Request $request)
+    {
+        if ($request->ajax()) {
+
+            $filter['emp_id'] = auth()->user()->emp_id;
+            $startDate = $request->start;
+            $endDate = $request->end;
+            $filter['date_range'] = $startDate . ' - ' . $endDate;
+            $data['filter'] = $filter;
+            $emps = $this->attendanceReport->employeeRegularAttendanceData(null, $filter, null);
+
+            foreach ($emps as $emp) {
+                foreach ($emp->date as $key => $value) {
+
+                    switch ($value['status']) {
+                        case 'P':
+                            $color = '#43A047';
+                            break;
+
+                        case 'P*':
+                            $color = '#1E88E5';
+                            break;
+
+                        case 'L':
+                            $color = '#3949AB';
+                            break;
+
+                        case 'H':
+                            $color = '#00ACC1';
+                            break;
+
+                        case 'D':
+                            $color = '#546E7A';
+                            break;
+
+                        default:
+                            $color = '#E53935';
+                            break;
+                    }
+                    $attendanceArray[] = [
+                        'title' => $value['status'],
+                        'start' => $key,
+                        'color' => $color,
+                    ];
+                }
+            }
+            return response()->json($attendanceArray);
+        }
+    }
+}

@@ -1,0 +1,90 @@
+<?php
+
+namespace App\Modules\Leave\Console;
+
+
+use App\Modules\Employee\Entities\EmployeeLeave;
+use App\Modules\FiscalYearSetup\Entities\FiscalYearSetup;
+use App\Modules\Leave\Entities\LeaveType;
+use Carbon\Carbon;
+use Illuminate\Console\Command;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputArgument;
+
+class ProrataLeaveMonthlyCommand extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $name = 'prorata:monthly';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Monthly Prorata Leave Cron';
+
+    /**
+     * Create a new command instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return mixed
+     */
+    public function handle()
+    {
+        try {
+
+            $subDay = Carbon::now()->subDay();
+            $getCurrentMonthDays = $subDay->daysInMonth;
+            $empLeaves = EmployeeLeave::whereHas('leaveTypeModel', function ($query) {
+                $query->where([
+                    'status' => 11,
+                    'prorata_status' => 11
+                ]);
+            })
+                // ->with(['leaveTypeModel' => function ($query) {
+                //     $query->where([
+                //         'status' => 11,
+                //         'prorata_status' => 11
+                //     ]);
+                // }])
+                ->where('is_valid', 11)
+                // ->whereIn('id', ['2442', '2443', '2444', '2445'])
+                ->get();
+            if ($empLeaves->count() > 0) {
+                $bar = $this->output->createProgressBar(count($empLeaves));
+                $bar->start();
+                $increment = 1;
+                foreach ($empLeaves as $employeeLeave) {
+                    $explodeDecimal = explode(".", $employeeLeave->prorata_earned);
+                    if (isset($explodeDecimal[1]) && $explodeDecimal[1] >= $getCurrentMonthDays) {
+                        $remainingDays = $explodeDecimal[1] - $getCurrentMonthDays;
+                        $employeeLeave->leave_remaining +=  $increment;
+                        $employeeLeave->prorata_earned =  ($remainingDays / 10);
+
+                        $employeeLeave->save();
+                    }
+                    $bar->advance();
+
+                }
+                $bar->finish();
+
+            }
+        } catch (\Throwable $th) {
+            //throw $th;
+            echo $th->getMessage();
+        }
+    }
+}

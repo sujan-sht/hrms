@@ -1,0 +1,13 @@
+{
+    "name": "BulkUpload",
+    "alias": "bulkupload",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "App\\Modules\\BulkUpload\\Providers\\BulkUploadServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

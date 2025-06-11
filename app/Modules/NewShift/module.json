@@ -1,0 +1,13 @@
+{
+    "name": "NewShift",
+    "alias": "newshift",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "App\\Modules\\NewShift\\Providers\\NewShiftServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

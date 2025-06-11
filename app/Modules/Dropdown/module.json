@@ -1,0 +1,13 @@
+{
+    "name": "Dropdown",
+    "alias": "dropdown",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "App\\Modules\\Dropdown\\Providers\\DropdownServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

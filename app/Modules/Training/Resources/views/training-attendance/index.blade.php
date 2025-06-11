@@ -1,0 +1,192 @@
+@extends('admin::layout')
+@section('title')
+    Training Attendees
+@endSection
+@section('breadcrum')
+    <a class="breadcrumb-item" href="{{ route('training.index') }}">Trainings</a>
+    <a class="breadcrumb-item active">Training Attendees</a>
+@endsection
+
+@inject('menuRoles', '\App\Modules\User\Services\CheckUserRoles')
+
+@section('content')
+
+    @include('training::training-attendance.partial.search')
+    <div class="card card-body">
+        <div class="media align-items-center align-items-md-start flex-column flex-md-row">
+            <a href="#" class="text-teal mr-md-3 align-self-md-center mb-3 mb-md-0">
+                <i class="icon-gallery text-success-400 border-success-400 border-3 rounded-round p-2"></i>
+            </a>
+            <div class="media-body text-center text-md-left">
+                <h6 class="media-title font-weight-semibold">List of Training Attendees</h6>
+                All the Training Attendees Information will be listed below. You can Create and Modify the data.
+            </div>
+
+            <div class="mt-1">
+                <a href="{{ route('training-attendance.create', $trainingModel->id) }}" class="btn btn-success"><i
+                        class="icon-plus2"></i> Add</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card card-body">
+
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr class="text-light btn-slate">
+                        <th>S.N</th>
+                        {{-- <th>Training Name</th> --}}
+                        <th>Attendee Name</th>
+                        <th>Contact Number</th>
+                        <th>Email</th>
+                        <th>Remarks</th>
+                        {{-- <th>Feedback</th> --}}
+                        {{-- @if (isset($trainingModel->full_marks) && $trainingModel->full_marks > 0)
+                            <th>Marks Obtained</th>
+                        @endif --}}
+                        <th>Status</th>
+                        {{-- <th>Created Date</th> --}}
+                        <th width="12%">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if ($trainingAttendanceModels->total() != 0)
+                        @foreach ($trainingAttendanceModels as $key => $trainingAttendanceModel)
+                            <tr>
+                                <td width="5%">#{{ $trainingAttendanceModels->firstItem() + $key }}</td>
+                                <td>{{ optional($trainingAttendanceModel->employeeModel)->full_name }}</td>
+                                <td>{{ $trainingAttendanceModel->contact_no }}</td>
+                                <td>{{ $trainingAttendanceModel->email }}</td>
+                                <td>{{ $trainingAttendanceModel->remarks }}</td>
+                                <td>
+                                    @if ($trainingAttendanceModel->status)
+                                        <span
+                                            class="badge badge-{{ $trainingAttendanceModel->getStatusWithColor()['color'] }}">{{ $trainingAttendanceModel->getStatusWithColor()['status'] }}</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <a class="btn btn-outline-warning btn-icon btnStatus mx-1" data-toggle="modal"
+                                        data-target="#updateStatus" data-id="{{ $trainingAttendanceModel->id }}"
+                                        data-status="{{ $trainingAttendanceModel->status }}" data-popup="tooltip"
+                                        data-placement="top" data-original-title="Status" href="javascript:void(0)">
+                                        <i class="icon-flag3"></i>
+                                    </a>
+
+                                    {{-- @if ($menuRoles->assignedRoles('training-attendance.edit'))
+                                        <a class="btn btn-outline-primary btn-icon mx-1"
+                                            href="{{ route('training-attendance.edit', ['training_id' => $trainingModel->id, 'id' => $trainingAttendanceModel->id]) }}"
+                                            data-popup="tooltip" data-placement="top" data-original-title="Edit">
+                                            <i class="icon-pencil7"></i>
+                                        </a>
+                                    @endif --}}
+
+                                    @if ($menuRoles->assignedRoles('training-attendance.delete'))
+                                        <a class="btn btn-outline-danger btn-icon confirmDelete"
+                                            link="{{ route('training-attendance.delete', ['training_id' => $trainingModel->id, 'id' => $trainingAttendanceModel->id]) }}"
+                                            data-popup="tooltip" data-placement="top" data-original-title="Delete">
+                                            <i class="icon-trash-alt"></i>
+                                        </a>
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    @else
+                        <tr>
+                            <td colspan="7">No Training Attendees Found !!!</td>
+                        </tr>
+                    @endif
+                </tbody>
+            </table>
+        </div>
+        <div class="col-12">
+            <span class="float-right pagination align-self-end mt-3">
+                {{ $trainingAttendanceModels->appends(request()->all())->links() }}
+            </span>
+        </div>
+    </div>
+
+    <!-- popup modal -->
+    <div id="updateStatus" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-white">
+                    <h5 class="modal-title">Update Status</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {!! Form::open([
+                        'route' => ['training-attendance.update.status', $trainingModel->id],
+                        'method' => 'POST',
+                        'class' => 'form-horizontal',
+                        'id' => 'trainingAtdStatusForm',
+                        'role' => 'form',
+                    ]) !!}
+                    {!! Form::hidden('id', null, ['id' => 'trainingAttendanceId']) !!}
+                    <div class="form-group">
+                        <div class="row">
+                            <label class="col-form-label col-lg-3">Status :</label>
+                            <div class="col-lg-9">
+                                {!! Form::select('status', [11 => 'Present', 10 => 'Absent'], null, [
+                                    'id' => 'atdStatus',
+                                    'placeholder' => 'Select Status',
+                                    'class' => 'form-control select2',
+                                    'required',
+                                ]) !!}
+                            </div>
+                        </div>
+                        <div id="statusMessage" class="row mt-3" style="display:none">
+                            <label class="col-form-label col-lg-3">Message :</label>
+                            <div class="col-lg-9 form-group-feedback form-group-feedback-right">
+                                <div class="input-group">
+                                    {!! Form::textarea('remarks', null, [
+                                        'rows' => 3,
+                                        'placeholder' => 'Write message..',
+                                        'class' => 'form-control',
+                                    ]) !!}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn bg-success text-white">Save Changes</button>
+                    </div>
+                    {!! Form::close() !!}
+                </div>
+            </div>
+        </div>
+    </div>
+
+@endsection
+
+
+@push('custom_script')
+    <script>
+        $(function() {
+
+            $('#updateStatus').on('show.bs.modal', function(e) {
+                $('#atdStatus').select2();
+                var id = $(e.relatedTarget).data('id');
+                status = $(e.relatedTarget).data('status');
+                $('#trainingAtdStatusForm').find('#trainingAttendanceId').val(id);
+
+                $('#atdStatus').val('').select2();
+                if (status) {
+                    $('#atdStatus').val(status).select2();
+                }
+            })
+
+            $('#atdStatus').on('change', function() {
+                var status = $(this).val();
+                if (status == '10') {
+                    $('#statusMessage').show();
+                } else {
+                    $('#statusMessage').hide();
+                }
+            });
+
+        })
+    </script>
+@endpush

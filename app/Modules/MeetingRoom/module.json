@@ -1,0 +1,13 @@
+{
+    "name": "MeetingRoom",
+    "alias": "meetingroom",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "App\\Modules\\MeetingRoom\\Providers\\MeetingRoomServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

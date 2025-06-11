@@ -1,0 +1,90 @@
+<div>
+    <div class="input-group">
+        <span class="input-group-text">
+            <select class="date_mode">
+                <option value="nep" {{ $default == 'nep' ? 'selected' : '' }}>Nep</option>
+                <option value="eng" {{ $default == 'eng' ? 'selected' : '' }}>Eng</option>
+            </select>
+        </span>
+        <input type="text" id="{{ $nepDateAttribute }}" class="{{ $nepDateAttribute }} form-control"
+            style="display: none" data-single="true" placeholder="Select Nepali Date" value="{{ $nepali_date }}">
+        <input type="text" id="{{ $engDateAttribute }}" class="{{ $engDateAttribute }} form-control"
+            style="display: none" data-single="true" value="{{ $english_date }}">
+    </div>
+    <input type="hidden" name="{{ $nepDateAttribute }}" value="{{ $nepali_date }}">
+    <input type="hidden" name="{{ $engDateAttribute }}" value="{{ $english_date }}">
+    {{-- Script --}}
+    <link rel="stylesheet" href="{{ asset('admin/nepali_calender4/css/nepali.datepicker.v4.0.min.css') }}">
+    <script type="text/javascript" src="{{ asset('admin/nepali_calender4/js/nepali.datepicker.v4.0.min.js') }}"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <script>
+        $(document).ready(function() {
+            // Initialize Calendar
+            showCalendarByDateMode();
+
+            $(document).on('change', '.date_mode', function() {
+                showCalendarByDateMode($(this).val());
+            })
+
+            function nepali_calendar() {
+                var nepali_calendar = document.getElementById("{{ $nepDateAttribute }}");
+                nepali_calendar.nepaliDatePicker({
+                    ndpYear: true,
+                    ndpMonth: true,
+                    ndpYearCount: 30,
+                    onChange: function(date) {
+                        var nep_date = date.bs;
+                        var eng_date = date.ad;
+
+                        syncDates(nep_date, eng_date);
+                    }
+                });
+            }
+
+            function english_calendar() {
+                var english_calendar = document.getElementById("{{ $engDateAttribute }}");
+                $('#{{ $engDateAttribute }}').daterangepicker({
+                    singleDatePicker: true,
+                    showDropdowns: true,
+                    locale: {
+                        format: 'YYYY-MM-DD'
+                    },
+                    autoApply: true // optional, removes the "Apply" button
+                }, function(start, end, label) {
+                    var date = start.format('YYYY-MM-DD');
+                    var nep_date = NepaliFunctions.AD2BS(date);
+                    var eng_date = date;
+
+                    syncDates(nep_date, eng_date);
+                });
+            }
+
+            function showCalendarByDateMode(date_mode) {
+
+                date_mode = date_mode ?? '{{ $default }}';
+                if (date_mode == 'nep') {
+                    $("#{{ $nepDateAttribute }}").show();
+                    $("#{{ $engDateAttribute }}").hide();
+                    nepali_calendar();
+                } else if (date_mode == 'eng') {
+                    $("#{{ $nepDateAttribute }}").hide();
+                    $("#{{ $engDateAttribute }}").show();
+                    english_calendar();
+                }
+
+            }
+
+            function syncDates(nep_date, eng_date) {
+                var nepali_calendar = $("#{{ $nepDateAttribute }}");
+                var english_calendar = $("#{{ $engDateAttribute }}");
+                nepali_calendar.val(nep_date).trigger('change');
+                english_calendar.val(eng_date).trigger('change');
+
+                $('input[name={{ $engDateAttribute }}]').val(eng_date);
+                $('input[name={{ $nepDateAttribute }}]').val(nep_date);
+            }
+        })
+    </script>
+</div>

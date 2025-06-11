@@ -1,0 +1,13 @@
+{
+    "name": "Advance",
+    "alias": "advance",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "App\\Modules\\Advance\\Providers\\AdvanceServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

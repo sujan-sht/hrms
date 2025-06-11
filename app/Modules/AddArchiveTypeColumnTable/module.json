@@ -1,0 +1,13 @@
+{
+    "name": "AddArchiveTypeColumnTable",
+    "alias": "addarchivetypecolumntable",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "App\\Modules\\AddArchiveTypeColumnTable\\Providers\\AddArchiveTypeColumnTableServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

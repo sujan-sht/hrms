@@ -1,0 +1,13 @@
+{
+    "name": "FuelConsumption",
+    "alias": "fuelconsumption",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "App\\Modules\\FuelConsumption\\Providers\\FuelConsumptionServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

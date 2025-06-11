@@ -1,0 +1,804 @@
+openapi: 3.0.0
+info:
+  title: JCB APP API
+  description: API for JCB APP
+  version: 0.1.9
+
+servers:
+  - url: http://jcb-app.test/api/v1/
+    description: local server
+  - url: http://127.0.0.1:8000/api/v1/
+    description: local server
+  - url: https://maw-jcb.bidhee.net/api/v1/
+    description: production server
+
+components:
+  securitySchemes:
+    bearerAuth:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+paths:
+  /login:
+    post:
+      description: Login to the user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: user@name.com
+
+                password:
+                  type: password
+                  example: -----
+
+      responses:
+        200:
+          description: Successfully Logged in
+        500:
+          description: username or password invalid
+  /getDropdown:
+    get:
+      security:
+          - bearerAuth: []
+      description: Get list of Dropdown Values of Given Slug
+      parameters:
+        - name: slug
+          in: query
+          description: The value of Slug
+          schema:
+            type: string
+
+      responses:
+        200:
+          description: Success
+        401:
+          description: UnAuthenticated
+        500:
+          description: Please provide dropdown slug
+  /getChecklistCategory:
+
+    get:
+      tags:
+        - CheckList
+      security:
+        - bearerAuth: []
+      description: Get list of ChecklistCategory as per checklist type
+      parameters:
+        - name: checklistTypeId
+          in: query
+          description: Checklist Type Id
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success
+        401:
+          description: UnAuthenticated
+        500:
+          description: Please provide checklist_type_id
+  /getChecklistTitle:
+    get:
+      tags:
+        - CheckList
+      security:
+        - bearerAuth: []
+      description: Get list of ChecklistTitle as per checklist category
+      parameters:
+        - name: checklistCategoryId
+          in: query
+          description: Checklist Category Id
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success
+        401:
+          description: UnAuthenticated
+        500:
+          description: Please provide checklist_category_id
+  /storeChecklist:
+    post:
+      security:
+        - bearerAuth: []
+      description: Store Checklist
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                checklist_type_id:
+                  type: integer
+                  example: 7
+                checklist_category_id:
+                  type: integer
+                  example: 1
+                checklist_title_id:
+                  type: integer
+                  example: 2
+                status:
+                  type: string
+                  example: OK
+                remarks:
+                  type: string
+                  example: Testing
+
+      responses:
+        200:
+          description: Successfully Created
+        401:
+          description: UnAuthenticated
+        500:
+          description: Something Went Wrong
+
+  /getChecklists:
+    get:
+      security:
+        - bearerAuth: []
+      description: Get list of all Checklist
+      responses:
+        200:
+          description: Success
+        401:
+          description: UnAuthenticated
+        500:
+          description: Something went wrong
+
+  /updateChecklist/{id}:
+    put:
+      security:
+        - bearerAuth: []
+      description: Update Checklist
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: The Id of checklist
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                checklist_type_id:
+                  type: integer
+                  example: 7
+                checklist_category_id:
+                  type: integer
+                  example: 1
+                checklist_title_id:
+                  type: integer
+                  example: 2
+                status:
+                  type: string
+                  example: OK
+                remarks:
+                  type: string
+                  example: Testing
+
+      responses:
+        200:
+          description: Successfully Updated
+        401:
+          description: UnAuthenticated
+        500:
+          description: Something Went Wrong
+
+  /deleteChecklist/{id}:
+    get:
+      security:
+        - bearerAuth: []
+      description: Deleted Related Id Checklist
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: The Id of checklist
+      responses:
+        200:
+          description: Success
+        401:
+          description: UnAuthenticated
+        500:
+          description: Something went wrong
+
+  /getChecklist/{id}:
+    get:
+      security:
+        - bearerAuth: []
+      description: Get Related Id Checklist
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: The Id of checklist
+      responses:
+        200:
+          description: Success
+        401:
+          description: UnAuthenticated
+        500:
+          description: Something went wrong
+
+  /getAttendances:
+    get:
+      security:
+        - bearerAuth: []
+      description: Get list of all Attendances
+      responses:
+        200:
+          description: Success
+        401:
+          description: UnAuthenticated
+        500:
+          description: Something went wrong
+
+  /attendance/store:
+    post:
+      security:
+        - bearerAuth: []
+      description: Store Attendance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                  example: MAW\\RADHARAMAN.JHA
+                date:
+                  type: string
+                  example: "2022-12-22"
+                clockin_time:
+                  type: string
+                  example: 09:12
+                clockout_time:
+                  type: string
+                  example: 05:22
+                latitude:
+                  type: string
+                  example: 9832131k
+                longitude:
+                  type: string
+                  example: 8543356d
+
+      responses:
+        200:
+          description: Successfully Created
+        401:
+          description: UnAuthenticated
+        500:
+          description: Something Went Wrong
+
+  /getAttendance/{id}:
+    get:
+      security:
+        - bearerAuth: []
+      description: Get Related Id Attendance
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: The Id of Attendance
+      responses:
+        200:
+          description: Success
+        401:
+          description: UnAuthenticated
+        500:
+          description: Something went wrong
+
+  /attendance/update/{id}:
+    put:
+      security:
+        - bearerAuth: []
+      description: Update Attendance
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: The Id of Attendance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                  example: MAW\\RADHARAMAN.JHA
+                date:
+                  type: string
+                  example: "2022-12-22"
+                clockin_time:
+                  type: string
+                  example: 09:12
+                clockout_time:
+                  type: string
+                  example: 05:22
+                latitude:
+                  type: string
+                  example: 9832131k
+                longitude:
+                  type: string
+                  example: 8543356d
+
+      responses:
+        200:
+          description: Successfully Updated
+        401:
+          description: UnAuthenticated
+        500:
+          description: Something Went Wrong
+
+  /attendance/delete/{id}:
+    get:
+      security:
+        - bearerAuth: []
+      description: Deleted Related Id Attendance
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: The Id of Attendance
+      responses:
+        200:
+          description: Success
+        401:
+          description: UnAuthenticated
+        500:
+          description: Something went wrong
+
+  /getLeaves:
+    get:
+      security:
+        - bearerAuth: []
+      description: Get list of all Leaves
+      responses:
+        200:
+          description: Success
+        401:
+          description: UnAuthenticated
+        500:
+          description: Something went wrong
+
+  /leave/store:
+    post:
+      security:
+        - bearerAuth: []
+      description: Store leave
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                  example: MAW\\RADHARAMAN.JHA
+                date_from:
+                  type: date
+                  example: "2022-12-23"
+                date_to:
+                  type: date
+                  example: "2022-12-25"
+                reason:
+                  type: string
+                  example: this is the reason
+                requested_date:
+                  type: date
+                  example: "2022-12-22"
+
+      responses:
+        200:
+          description: Successfully Created
+        401:
+          description: UnAuthenticated
+        500:
+          description: Something Went Wrong
+
+  /getLeave/{id}:
+    get:
+      security:
+        - bearerAuth: []
+      description: Get Related Id Leave
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: The Id of Leave
+      responses:
+        200:
+          description: Success
+        401:
+          description: UnAuthenticated
+        500:
+          description: Something went wrong
+
+  /leave/update/{id}:
+    put:
+      security:
+        - bearerAuth: []
+      description: Update Leave
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: The Id of Leave
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                  example: MAW\\RADHARAMAN.JHA
+                date_from:
+                  type: date
+                  example: "2022-12-23"
+                date_to:
+                  type: date
+                  example: "2022-12-25"
+                reason:
+                  type: string
+                  example: this is the reason
+                requested_date:
+                  type: date
+                  example: "2022-12-22"
+
+      responses:
+        200:
+          description: Successfully Updated
+        401:
+          description: UnAuthenticated
+        500:
+          description: Something Went Wrong
+
+  /leave/delete/{id}:
+    get:
+      security:
+        - bearerAuth: []
+      description: Deleted Related Id Leave
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: The Id of Leave
+      responses:
+        200:
+          description: Success
+        401:
+          description: UnAuthenticated
+        500:
+          description: Something went wrong
+
+  /machineInquiries:
+    get:
+      security:
+        - bearerAuth: []
+      description: Get list of all Machine Inquiries
+      responses:
+        200:
+          description: Success
+        401:
+          description: UnAuthenticated
+        500:
+          description: Something went wrong
+
+  /machineInquiry/store:
+    post:
+      security:
+        - bearerAuth: []
+      description: Store Machine Inquiry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                customer_name:
+                  type: string
+                  example: John Doe
+                application:
+                  type: string
+                  example: "Office Uses"
+                machine_model_id:
+                  type: integer
+                  example: 9
+                qty_required:
+                  type: integer
+                  example: 10
+                contact_person:
+                  type: string
+                  example: "John Doe"
+                contact_number:
+                  type: string
+                  example: '9815642125'
+                remarks:
+                  type: string
+                  example: 'Enter Remarks'
+
+      responses:
+        200:
+          description: Successfully Created
+        401:
+          description: UnAuthenticated
+        500:
+          description: Something Went Wrong
+
+  /machineInquiry/{id}:
+    get:
+      security:
+        - bearerAuth: []
+      description: Get Related Machine Inquiry
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: The Id of Machine Inquiry
+      responses:
+        200:
+          description: Success
+        401:
+          description: UnAuthenticated
+        500:
+          description: Something went wrong
+
+  /machineInquiry/update/{id}:
+    put:
+      security:
+        - bearerAuth: []
+      description: Update Machine Inquiry
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: The Id of Machine Inquiry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                customer_name:
+                  type: string
+                  example: John Doe
+                application:
+                  type: string
+                  example: "Office Uses"
+                machine_model_id:
+                  type: integer
+                  example: 9
+                qty_required:
+                  type: integer
+                  example: 10
+                contact_person:
+                  type: string
+                  example: "John Doe"
+                contact_number:
+                  type: string
+                  example: '9815642125'
+                remarks:
+                  type: string
+                  example: 'Enter Remarks'
+
+      responses:
+        200:
+          description: Successfully Updated
+        401:
+          description: UnAuthenticated
+        500:
+          description: Something Went Wrong
+
+  /machineInquiry/delete/{id}:
+    get:
+      security:
+        - bearerAuth: []
+      description: Deleted Related Id Machine Inquiry
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: The Id of Machine Inquiry
+      responses:
+        200:
+          description: Success
+        401:
+          description: UnAuthenticated
+        500:
+          description: Something went wrong
+
+  /getCompetitorInfos:
+    get:
+      security:
+        - bearerAuth: []
+      description: Get list of all Competitors Information
+      responses:
+        200:
+          description: Success
+        401:
+          description: UnAuthenticated
+        500:
+          description: Something went wrong
+
+  /competitorInfo/store:
+    post:
+      security:
+        - bearerAuth: []
+      description: Store Competitor Information
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                customer_name:
+                  type: string
+                  example: John Doe
+                application:
+                  type: string
+                  example: Office Uses
+                purchased_machine_make:
+                  type: string
+                  example: JCB
+                purchased_machine_model:
+                  type: string
+                  example: 2019M
+                contact_person:
+                  type: string
+                  example: John Doe
+                contact_number:
+                  type: string
+                  example: 9815642125
+      responses:
+        200:
+          description: Successfully Created
+        401:
+          description: UnAuthenticated
+        500:
+          description: Something Went Wrong
+  /services/request/all:
+    get:
+      tags:
+      - Service Call
+      security:
+        - bearerAuth: []
+      description: Get list of All Job
+      responses:
+        '200':
+          description: Response Job
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        UnauthorizedError:
+          description: Access token is missing or invalid
+  /services/request/pending/job:
+    get:
+      tags:
+      - Service Call
+      security:
+        - bearerAuth: []
+      description: Get list of Pending Job
+      responses:
+        '200':
+          description: Response Job
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        UnauthorizedError:
+          description: Access token is missing or invalid
+  /services/request/completed/job:
+    get:
+      tags:
+      - Service Call
+      security:
+        - bearerAuth: []
+      description: Get list of Completed Job
+      responses:
+        '200':
+          description: Response Job
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        UnauthorizedError:
+          description: Access token is missing or invalid
+  /services/request/new/job:
+    get:
+      tags:
+      - Service Call
+      security:
+        - bearerAuth: []
+      description: Get list of New Job
+      responses:
+        '200':
+          description: Response Job
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        UnauthorizedError:
+          description: Access token is missing or invalid
+  /services/accept/services:
+    get:
+      tags:
+      - Service Call
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                job_id:          # <!--- form field name
+                  type: integer
+              required:
+                - name
+            example:
+              job_id: 114
+      security:
+        - bearerAuth: []
+      description: Get list of New Job
+      responses:
+        '200':
+          description: Response Job
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        UnauthorizedError:
+          description: Access token is missing or invalid

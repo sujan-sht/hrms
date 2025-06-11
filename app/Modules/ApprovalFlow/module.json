@@ -1,0 +1,13 @@
+{
+    "name": "ApprovalFlow",
+    "alias": "approvalflow",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "App\\Modules\\ApprovalFlow\\Providers\\ApprovalFlowServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

@@ -1,0 +1,13 @@
+{
+    "name": "Attendance",
+    "alias": "attendance",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "App\\Modules\\Attendance\\Providers\\AttendanceServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

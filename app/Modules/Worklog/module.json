@@ -1,0 +1,13 @@
+{
+    "name": "Worklog",
+    "alias": "worklog",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "App\\Modules\\Worklog\\Providers\\WorklogServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

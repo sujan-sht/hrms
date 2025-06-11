@@ -1,0 +1,13 @@
+{
+    "name": "GeoFence",
+    "alias": "geofence",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "App\\Modules\\GeoFence\\Providers\\GeoFenceServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

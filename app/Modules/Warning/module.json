@@ -1,0 +1,13 @@
+{
+    "name": "Warning",
+    "alias": "warning",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "App\\Modules\\Warning\\Providers\\WarningServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

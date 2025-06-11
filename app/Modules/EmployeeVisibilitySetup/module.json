@@ -1,0 +1,13 @@
+{
+    "name": "EmployeeVisibilitySetup",
+    "alias": "employeevisibilitysetup",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "App\\Modules\\EmployeeVisibilitySetup\\Providers\\EmployeeVisibilitySetupServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

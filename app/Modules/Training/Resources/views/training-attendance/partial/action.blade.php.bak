@@ -1,0 +1,146 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <legend class="text-uppercase font-size-sm font-weight-bold">Training Attendee Details</legend>
+                <div class="form-group row">
+                    @if(!$isEdit)
+                        <div class="col-lg-4 mb-3">
+                            <div class="row">
+                                <label class="col-form-label col-lg-4">Is Participant :<span class="text-danger"> *</span></label>
+                                <div class="col-lg-8 form-group-feedback form-group-feedback-right">
+                                    <div class="input-group">
+                                        {!! Form::select('is_participant', ['1'=>'Yes', '2'=>'No'], null, ['id'=>'isParticipantId', 'placeholder'=>'Choose', 'class'=>'form-control']) !!}
+                                    </div>
+                                    {!! Form::hidden('training_id', $trainingModel->id, ['id'=>'training']) !!}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4 mb-3 show_participant" style="display:none">
+                            <div class="row">
+                                <label class="col-form-label col-lg-4">Select Participant: </label>
+                                <div class="col-lg-8 form-group-feedback form-group-feedback-right">
+                                    <div class="input-group">
+                                        <select name="participant_data" class="form-control select-search1" id="participant_data">
+                                            <option value="" selected disabled>Select Participant</option>
+                                            @foreach ($paticipantList as $key=>$trainingParticipant )
+                                                <option value="{{ $trainingParticipant['training_participant_id'] }}" data-employee="{{ $trainingParticipant['employee_id'] }}">{{$trainingParticipant['employee_name']}}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {!! Form::hidden('participant_id', null, ['id' => 'employeeId']) !!}
+                    @endif
+                    <div class="col-lg-4 mb-3 employeeDiv">
+                        <div class="row">
+                            <label class="col-form-label col-lg-4">Employee :<span class="text-danger"> *</span></label>
+                            <div class="col-lg-8 form-group-feedback form-group-feedback-right">
+                                {!! Form::select('employee_id', $employeeList, $value = null, [
+                                    'class' => 'form-control select-search1',
+                                    'data-toggle' => 'select2',
+                                    'placeholder' => 'Select Employee',
+                                    'id'=>'employee_id'
+                                ]) !!}
+                                @if ($errors->has('employee_id'))
+                                    <div class="error text-danger">{{ $errors->first('employee_id') }}</div>
+                                @endif
+                            </div>
+
+                            {{-- <label class="col-form-label col-lg-4">Attendee Name :<span class="text-danger"> *</span></label>
+                            <div class="col-lg-8 form-group-feedback form-group-feedback-right">
+                                <div class="input-group">
+                                    {!! Form::text('participant_name', null, ['rows'=>5, 'placeholder'=>'Write Attendee Name..', 'class'=>'form-control', 'id'=>'participant_name']) !!}
+                                </div>
+                                @if($errors->has('participant_name'))
+                                    <div class="error text-danger">{{ $errors->first('participant_name') }}</div>
+                                @endif
+                            </div> --}}
+                        </div>
+                    </div>
+                    <div class="col-lg-4 mb-3">
+                        <div class="row">
+                            <label class="col-form-label col-lg-4">Contact Number :<span class="text-danger"> *</span></label>
+                            <div class="col-lg-8 form-group-feedback form-group-feedback-right">
+                                <div class="input-group">
+                                    {!! Form::text('contact_no', null, ['rows'=>5, 'placeholder'=>'Enter Contact Number..', 'class'=>'form-control numeric','id'=>'contact_no']) !!}
+                                </div>
+                                @if($errors->has('contact_no'))
+                                    <div class="error text-danger">{{ $errors->first('contact_no') }}</div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 mb-3">
+                        <div class="row">
+                            <label class="col-form-label col-lg-4">Email :<span class="text-danger"> *</span></label>
+                            <div class="col-lg-8 form-group-feedback form-group-feedback-right">
+                                <div class="input-group">
+                                    {!! Form::text('email', null, ['rows'=>5, 'placeholder'=>'Write Email Here..', 'class'=>'form-control','id'=>'email']) !!}
+                                </div>
+                                @if($errors->has('email'))
+                                    <div class="error text-danger">{{ $errors->first('email') }}</div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 mb-3">
+                        <div class="row">
+                            <label class="col-form-label col-lg-4">Remarks :<span class="text-danger"> *</span></label>
+                            <div class="col-lg-8 form-group-feedback form-group-feedback-right">
+                                <div class="input-group">
+                                    {!! Form::text('remarks', null, ['rows'=>5, 'placeholder'=>'Write Remarks Here..', 'class'=>'form-control','id'=>'remarks']) !!}
+                                </div>
+                                @if($errors->has('remarks'))
+                                    <div class="error text-danger">{{ $errors->first('remarks') }}</div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 mb-3">
+                        <div class="row">
+                            <label class="col-form-label col-lg-4">Feedback :<span class="text-danger"> *</span></label>
+                            <div class="col-lg-8 form-group-feedback form-group-feedback-right">
+                                <div class="input-group">
+                                    {!! Form::text('feedback', null, ['rows'=>5, 'placeholder'=>'Write Feedback Here..', 'class'=>'form-control']) !!}
+                                </div>
+                                @if($errors->has('feedback'))
+                                    <div class="error text-danger">{{ $errors->first('feedback') }}</div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    @if (isset($trainingModel->full_marks) && $trainingModel->full_marks > 0)
+                        <div class="col-lg-4 mb-3">
+                            <div class="row">
+                                <label class="col-form-label col-lg-4">Marks Obtained:<span class="text-danger"> *</span></label>
+                                <div class="col-lg-8 form-group-feedback form-group-feedback-right">
+                                    <div class="input-group">
+                                        {!! Form::text('marks_obtained', null, ['rows'=>5, 'placeholder'=>'Enter Number..', 'class'=>'form-control numeric']) !!}
+                                    </div>
+                                    @if($errors->has('marks_obtained'))
+                                        <div class="error text-danger">{{ $errors->first('marks_obtained') }}</div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="text-center">
+    <button type="submit" class="ml-2 btn btn-success btn-labeled btn-labeled-left"><b><i class="icon-database-insert"></i></b>{{ $btnType }}</button>
+</div>
+
+@section('script')
+    <script src="{{ asset('admin/validation/training-attendance.js')}}"></script>
+    <script src="{{asset('admin/global/js/plugins/forms/styling/uniform.min.js')}}"></script>
+    <script src="{{asset('admin/global/js/demo_pages/form_inputs.js')}}"></script>
+    <script src="{{ asset('admin/global/js/plugins/forms/selects/select2.min.js')}}"></script>
+    <script src="{{ asset('admin/global/js/demo_pages/form_select2.js')}}"></script>
+@endSection

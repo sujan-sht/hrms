@@ -1,0 +1,13 @@
+{
+    "name": "OrganizationalStructure",
+    "alias": "organizationalstructure",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "App\\Modules\\OrganizationalStructure\\Providers\\OrganizationalStructureServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

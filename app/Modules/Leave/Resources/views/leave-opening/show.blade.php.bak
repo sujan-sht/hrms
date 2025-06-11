@@ -1,0 +1,122 @@
+@extends('admin::layout')
+@section('title') Leave Opening Summary @stop
+@section('breadcrum')
+    <a href="{{ route('leaveOpening.index') }}" class="breadcrumb-item">Leave Opening</a>
+    <a class="breadcrumb-item active">Summary</a>
+@stop
+@section('css')
+    <style>
+    </style>
+@endsection
+
+@section('content')
+
+    @include('leave::leave-opening.filter')
+
+    @include('leave::leave-opening.employee-widget')
+
+    @if (count($employeeLeaveSummaries) > 0)
+
+        <div class="card card-body">
+            <div class="table-responsive">
+            <table class="table table-responsive1 table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <td rowspan="2">SN</td>
+                        <td rowspan="2">Employee</td>
+                        @foreach ($allLeaveTypes as $leaveType)
+                            <th colspan="3" scope="colgroup" class="text-center">{{ $leaveType->name }}
+                            </th>
+                        @endforeach
+                    </tr>
+                    <tr class="text-center text-white">
+                        @foreach ($allLeaveTypes as $leaveType)
+                            <th>TL</th>
+                            <th>LT</th>
+                            <th>RL</th>
+                        @endforeach
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (count($employeeLeaveSummaries) > 0)
+                        @foreach ($employeeLeaveSummaries as $key => $employeeLeaveSummary)
+                            <tr>
+                                <td>
+                                    #{{ $employeeLeaveSummaries->firstItem() + $key }}</td>
+                                @php
+                                    if ($employeeLeaveSummary->profile_pic != null && $employeeLeaveSummary->profile_pic != '') {
+                                        $profile_pic = asset('uploads/employee/profile_pic/' . $employeeLeaveSummary->profile_pic);
+                                    } else {
+                                        $profile_pic = asset('admin/default.png');
+                                    }
+
+                                    if (!empty($employeeLeaveSummary->middle_name)) {
+                                        $full_name = $employeeLeaveSummary->first_name . ' ' . $employeeLeaveSummary->middle_name . ' ' . $employeeLeaveSummary->last_name;
+                                    } else {
+                                        $full_name = $employeeLeaveSummary->first_name . ' ' . $employeeLeaveSummary->last_name;
+                                    }
+                                @endphp
+
+                                <td class="d-flex text-nowrap">
+                                    <div class="media">
+                                        <div class="mr-1">
+                                            <a href="#">
+                                                <img src="{{ $profile_pic }}" class="rounded-circle" width="40"
+                                                    height="40" alt="">
+                                            </a>
+                                        </div>
+                                        <div class="media-body">
+                                            <div class="media-title font-weight-semibold">{{ $full_name }}</div>
+                                            <span class="text-muted">Code:
+                                                {{ $employeeLeaveSummary->employee_code }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                @php
+                                    $totalRemaining = 0;
+                                    $totalOpening = 0;
+                                @endphp
+                                @foreach ($allLeaveTypes as $leaveType)
+                                    @php
+                                        $totalRemaining += $employeeLeaveSummary->leaveRemaining[$leaveType->id] ?? 0;
+                                        $totalOpening += $employeeLeaveSummary->leaveOpening[$leaveType->id] ?? 0;
+                                    @endphp
+
+                                    <td>{{ $employeeLeaveSummary->leaveOpening[$leaveType->id] ?? 0 }}
+                                    </td>
+                                    <td></td>
+                                    <td> {{ $employeeLeaveSummary->leaveRemaining[$leaveType->id] ?? 0 }}
+                                    </td>
+                                @endforeach
+                                <td>
+                                    <h6>
+                                        <span style="font-size: 21px;">{{ $totalRemaining }}</span> / <span
+                                            class="text-secondary">{{ $totalOpening }}</span>
+                                    </h6>
+                                </td>
+                            </tr>
+                        @endforeach
+                    @else
+                        <tr>
+                            <td colspan="7">No Employee Leave Details Found !!!</td>
+                        </tr>
+                    @endif
+
+                </tbody>
+
+            </table>
+            </div>
+
+            <!-- Table --->
+
+
+            <div class="col-12">
+                <span class="float-right pagination align-self-end mt-3">
+                    {{ $employeeLeaveSummaries->appends(request()->all())->links() }}
+                </span>
+            </div>
+        </div>
+    @endif
+
+@endsection

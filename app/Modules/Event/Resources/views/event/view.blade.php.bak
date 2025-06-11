@@ -1,0 +1,50 @@
+@extends('admin::layout') 
+@section('title')Event Details @stop 
+@section('breadcrum')Event Details @stop 
+@section('script')
+<script src="{{asset('admin/global/js/plugins/tables/datatables/datatables.min.js')}}"></script>
+<script src="{{asset('admin/global/js/plugins/forms/selects/select2.min.js')}}"></script>
+@stop @section('content') 
+
+<div class="card">
+    <div class="card-body d-sm-flex align-items-sm-center justify-content-sm-between flex-sm-wrap">
+        <a href="{{ route('event.index') }}" class="btn bg-{{ config('admin.color-class.add') }}"><i class="{{ config('admin.color-class.add_icon') }}"></i> Back To List</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header header-elements-inline">
+        <h5 class="card-title">Event Details</h5>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table text-center">
+            <tbody>
+            <tr>
+                <td class="font-size-lg font-weight-black">Title</td>
+                <td>{{$event->title}}</td>
+            </tr>
+            <tr>
+                <td class="font-size-lg font-weight-black">Event Date</td>
+                <td>{{$event->event_date}}</td>
+            </tr>
+            <tr>
+                <td class="font-size-lg font-weight-black">Description</td>
+                <td>{{$event->description}}</td>
+            </tr>
+            <tr>
+                <td class="font-size-lg font-weight-black">Note</td>
+                <td>{{$event->note}}</td>
+            </tr>
+            <tr>
+                <td class="font-size-lg font-weight-black">Location</td>
+                <td>{{$event->location}}</td>
+            </tr>
+            </tbody>
+
+        </table>
+    </div>
+</div>
+
+
+@endsection

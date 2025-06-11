@@ -1,0 +1,49 @@
+<div class="card" style="height: 350px;">
+    <div class="card-header bg-transparent header-elements-inline">
+        <h4 class="card-title font-weight-semibold">
+            Request For Approval
+        </h4>
+        <div class="header-elements">
+            <div class="list-icons ml-3">
+                <a class="btn btn-success btn-sm rounded-pill" href="{{ route('leave.index') }}">
+                    View More    
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive bd-media-list">
+        <table class="table table-striped" width="100%">
+            <tbody>
+            @if($my_pending_leaves->total() != 0)
+                @foreach($my_pending_leaves as $key => $value)
+                    @php
+                        if(optional($value->employee)->profile_pic !=''){
+                            $imagePath = asset(optional($value->employee)->file_full_path).'/'.optional($value->employee)->profile_pic;
+                        }else{
+                            $imagePath = asset('admin/default.png');
+                        }
+                    @endphp
+                    <tr>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <a href="https://erp.cons.bidhee.com/admin/product/edit/37" class="text-default font-weight-semibold letter-icon-title">
+                                {{ $value->reason_for_leave }}
+                            </a>
+                            <div class="text-muted font-size-sm">
+                                {{ date('dS M, Y', strtotime($value->start_date)).' to '. date('dS M, Y', strtotime($value->end_date))}}
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <img src="{{$imagePath}}" alt="User" width="50"/>
+                </td>
+            </tr>
+                @endforeach
+            @endif
+            </tbody>
+        </table>
+    </div>
+</div>

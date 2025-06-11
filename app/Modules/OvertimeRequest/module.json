@@ -1,0 +1,13 @@
+{
+    "name": "OvertimeRequest",
+    "alias": "overtimerequest",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "App\\Modules\\OvertimeRequest\\Providers\\OvertimeRequestServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

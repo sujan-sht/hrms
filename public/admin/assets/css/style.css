@@ -1,0 +1,115 @@
+/* css for salary sheet */
+.salary-sheet{
+    background-color: #ffffff;
+    padding:50px 0;
+}
+.salary-sheet .salary-sheet-header{
+    display: flex;
+}
+.salary-sheet .salary-sheet-header .company-name{
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 20px;
+    margin-right: auto;
+}
+.salary-sheet .salary-sheet-header .company-name span{
+    font-size: 12px;
+    font-weight: 600;
+}
+.salary-sheet .salary-sheet-header .company-logo{
+    width: 100px;
+}
+.salary-sheet .salary-sheet-header .company-logo img{
+    width: 100%;
+    height: 100%;
+}
+
+    /* salary paid slip */
+.salary-sheet-body .salary-paid-block{
+    padding-bottom: 20px;
+}
+.salary-paid-row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+.salary-sheet-body .salary-paid-block h4{
+    text-align: center;
+    font-weight: 600;
+}
+.salary-paid-column {
+    float: left;
+    width: 50%;
+    padding: 5px 10px;
+    display: flex;
+    background-color: #f5f5f5;
+    border-bottom: 0.5px solid rgba(192, 192, 192, 0.83);
+}
+.salary-paid-column .block-left-side{
+    font-size: 14px;
+    font-weight: 500;
+    margin-right: auto;
+}
+/* salary details */
+.salary-sheet-body .salary-details-block{
+    padding-bottom: 20px;
+    display: flow-root;
+}
+
+.salary-sheet-body .salary-details-block h5{
+    text-align: center;
+    font-weight: 600;
+}
+
+.salary-details-row{
+    width: 50%;
+    float: left;
+}
+.salary-details-row .salary-details-subTitle{
+    font-size: 16px;
+    font-weight: 600;
+    padding: 5px 10px;
+}
+.salary-details-row:after{
+    content: "";
+    display: table;
+    clear: both;
+}
+.salary-details-column {
+    padding: 5px 10px;
+    display: flex;
+    border-bottom: 0.5px solid rgba(192, 192, 192, 0.83);
+    background-color: #f5f5f5;
+}
+.total{
+    font-weight: 600;
+}
+.salary-details-column .block-left-side {
+    font-size: 14px;
+    font-weight: 500;
+    margin-right: auto;
+
+}
+
+/* salary-sheet-footer */
+
+.salary-sheet-footer .salary-footer-column{
+    width: calc(100%/4 - 10px);
+    float: right;
+    padding-top: 50px;
+    margin-right: 10px;
+}
+.salary-sheet-footer .salary-footer-column .footer-title{
+    border-top: 1px dashed #b9b5b5;
+    padding-top: 10px;
+    font-weight: 600;
+}
+.salary-footer-column .footer-title{
+    border-top: 1px dashed #b9b5b5;
+    padding-top: 10px;
+    font-weight: 600;
+}
+.salary-sheet-footer .salary-footer-column ul li{
+    list-style-type: none;
+    font-weight: 600;
+}

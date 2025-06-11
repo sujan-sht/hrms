@@ -1,0 +1,159 @@
+<?php
+
+namespace App\Modules\Notice\Http\Controllers;
+
+use App\Modules\Notice\Repositories\NoticeInterface;
+use App\Modules\Notification\Repositories\NotificationInterface;
+use App\Modules\User\Repositories\UserInterface;
+use App\Modules\Notice\Traits\HtmlTableTrait;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Routing\Controller;
+
+class EmployeeNoticeController extends Controller
+{
+    use HtmlTableTrait;
+
+    /**
+     * @var NotificationInterface
+     */
+    private $notification;
+
+    /**
+     * @var UserInterface
+     */
+    private $user;
+
+    /**
+     * @var NoticeInterface
+     */
+    protected $notice;
+
+    public function __construct(NoticeInterface $notice, NotificationInterface $notification, UserInterface $user)
+    {
+        $this->notice = $notice;
+        $this->notification = $notification;
+        $this->user = $user;
+    }
+
+    /**
+     * Display a listing of the resource.
+     * @return Response
+     */
+    public function index()
+    {
+         if(auth()->user()->user_type == 'employee') {
+            $data['notice'] = $this->notice->getLatestNotices(30);
+        } else {
+            $data['notice'] = $this->notice->getLatestNotices(30);
+        }
+        return view('notice::notice.employee.index', $data);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     * @return Response
+     */
+    public function create()
+    {
+        return view('notice::create');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     * @param Request $request
+     * @return Response
+     */
+    public function store(Request $request)
+    {
+        $data = $request->all();
+
+        try {
+            $data['created_by'] = auth()->user()->id;
+            $notice = $this->notice->save($data);
+
+            $user = auth()->user();
+            $emp_info = $user->userEmployer;
+            $department_id = $emp_info->department_id ?? null;
+            $user_list = $this->user->getUsersByDepartment($department_id);
+
+            /* ---------------------------------------------------
+            Notification Start
+            ------------------------------------------------------*/
+
+            $message = "Manager has published a new notice. Kindly check it in the notice section of your dashboard.";
+            $link = route('employee-notice.index');
+            foreach ($user_list as $key => $value){
+                $notification_data = array(
+                    'creator_user_id' => $user->id,
+                    'notified_user_id' => $key,
+                    'message' => $message,
+                    'link' => $link,
+                    'type' => 'notice',
+                    'type_id_value' => $notice->id,
+                    'is_read' => '0',
+                );
+
+                $this->notification->save($notification_data);
+            }
+
+            /* ---------------------------------------------------
+            Notification End
+            ------------------------------------------------------*/
+
+            toastr()->success('Notice Created Successfully');
+
+        } catch (\Throwable $e) {
+            toastr()->error($e->getMessage());
+        }
+
+        return redirect(route('employee-notice.index'));
+    }
+
+    /**
+     * Show the specified resource.
+     * @param int $id
+     * @return Response
+     */
+    public function show($id)
+    {
+        return view('notice::show');
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     * @param int $id
+     * @return Response
+     */
+    public function edit($id)
+    {
+        return view('notice::edit');
+    }
+
+    /**
+     * Update the specified resource in storage.
+     * @param Request $request
+     * @param int $id
+     * @return Response
+     */
+    public function update(Request $request, $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     * @param int $id
+     * @return Response
+     */
+    public function destroy($id)
+    {
+        //
+    }
+
+    public function view($id)
+    {
+        $notice = $this->notice->find($id);
+        return $this->view_notice_html($notice);
+    }
+}

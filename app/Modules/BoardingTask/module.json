@@ -1,0 +1,13 @@
+{
+    "name": "BoardingTask",
+    "alias": "boardingtask",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "App\\Modules\\BoardingTask\\Providers\\BoardingTaskServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

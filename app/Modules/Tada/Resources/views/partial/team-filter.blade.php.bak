@@ -1,0 +1,101 @@
+<div class="card">
+    <div class="bg-secondary card-header header-elements-inline border-bottom-0 text-white">
+        <h5 class="card-title text-uppercase font-weight-semibold">Advance Filter</h5>
+        <div class="header-elements">
+            <div class="list-icons">
+                <a class="list-icons-item" data-action="collapse"></a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        {!! Form::open(['route'=>'tada.showTeamClaim','method'=>'GET','class'=>'form-horizontal', 'id'=> 'tada_filter', 'role'=>'form']) !!}
+        <div class="row">
+            {{-- @if($user_type == 'super_admin' || strtolower(trim($user_type)) == 'admin' || $user_type == 'hr')
+                <div class="col-md-3">
+                    <div class="form-group mb-0 pt-1 pb-1 pl-3 pr-3">
+                        <label class="d-block font-weight-semibold">Select Organization:</label>
+                        <div class="input-group">
+                            {!! Form::select('org_id', $org_list, request('org_id') ?? null, ['id'=>'organization', 'class'=>'form-control select2', 'placeholder'=>'Select Organization']) !!}
+                        </div>
+                    </div>
+                </div>
+            @endif --}}
+            @if($user_type == 'super_admin' || strtolower(trim($user_type)) == 'admin' || $user_type == 'hr' || $user_type == 'Supervisor')
+                <div class="col-md-3">
+                    <div class="form-group mb-0 pt-1 pb-1 pl-3 pr-3">
+                        <label class="d-block font-weight-semibold">Select Employee:</label>
+                        <div class="input-group">
+                            {!! Form::select('emp_id', $employees, request('emp_id') ?? null, ['class'=>'form-control select2', 'placeholder'=>'Select Employee']) !!}
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            <div class="col-md-3">
+                <div class="form-group mb-0 pt-1 pb-1 pl-3 pr-3">
+                    <label class="d-block font-weight-semibold">From Date:</label>
+                    <div class="input-group">
+                        <span class="input-group-prepend">
+                            <span class="input-group-text"><i class="icon-calendar"></i></span>
+                        </span>
+                        {{-- @php $selected_from_date = isset($from_date) && !empty($from_date) ? $from_date : ''; @endphp
+                        <input id="search_from" value="{{$selected_from_date}}" placeholder="Pick Date" class="form-control form-control-lg  daterange-single" name="from_date" type="text"> --}}
+                        {!! Form::text('from_date', request('from_date') ?? null, ['placeholder'=>'e.g: YYYY-MM-DD', 'class'=>'form-control daterange-single']) !!}
+
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group mb-0 pt-1 pb-1 pl-3 pr-3">
+                    <label class="d-block font-weight-semibold">To Date:</label>
+                    <div class="input-group">
+                        <span class="input-group-prepend">
+                            <span class="input-group-text"><i class="icon-calendar"></i></span>
+                        </span>
+                        {{-- @php $selected_to_date = isset($to_date) && !empty($to_date) ? $to_date : ''; @endphp
+                        <input id="search_to" value="{{$selected_to_date}}" placeholder="Pick Date" class="form-control form-control-lg  daterange-single" name="to_date" type="text"> --}}
+                        {!! Form::text('to_date', request('to_date') ?? null, ['placeholder'=>'e.g: YYYY-MM-DD', 'class'=>'form-control daterange-single']) !!}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group mb-0 pt-1 pb-1 pl-3 pr-3">
+                    <label class="d-block font-weight-semibold">Status:</label>
+                    <div class="input-group">
+                        {{-- @php $selected_search_value = isset($selected_search_value) && !empty($selected_search_value) ? $selected_search_value : ''; @endphp
+                        {!! Form::select('status', $statusList, $value = null, [ 'class' => 'form-control', 'placeholder' => 'Select Status', 'required']) !!} --}}
+                        {!! Form::select('status', $statusList, request('status') ?? null, ['class'=>'form-control select2', 'placeholder'=>'Select Status']) !!}
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group mb-0 pt-1 pb-1 pl-3 pr-3">
+                    <label class="d-block font-weight-semibold">Title:</label>
+                    <div class="input-group">
+                        {{-- @php $selected_search_value = isset($selected_search_value) && !empty($selected_search_value) ? $selected_search_value : ''; @endphp --}}
+                        {!! Form::text('title', request('title') ?? null, ['class'=>'form-control', 'placeholder'=>'Search by title']) !!}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end mt-2">
+            <button class="btn bg-yellow mr-2" type="submit">
+                <i class="icon-filter3 mr-1"></i>Filter
+            </button>
+            <a href="{{ route('tada.index') }}" class="btn bg-secondary text-white">
+                <i class="icons icon-reset mr-1"></i>Reset
+            </a>
+        </div>
+        {!! Form::close() !!}
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $('.select2').select2();
+    })
+</script>

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Vehicle Loan Details</title>
+        <!-- Bootstrap CSS -->
+        <link
+            href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <style>
+            .details-box,
+            .hr-section,
+            .loan-history,
+            .eligibility {
+                border: 1px solid #ddd;
+                padding: 15px;
+                margin-bottom: 20px;
+            }
+            .form-container {
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 20px;
+                background-color: #f9f9f9;
+                border-radius: 5px;
+                box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            }
+            .full-width {
+                grid-column: 1 / -1;
+            }
+            .hr-section-title {
+                text-align: center;
+                font-weight: bold;
+                margin-bottom: 10px;
+            }
+            .checkbox-item {
+                margin: 5px 0;
+            }
+            .input-line {
+                border-bottom: 1px dotted #000;
+                display: inline-block;
+                min-width: 200px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container form-container">
+            <div class="intro-text">
+                <p>Dear sir/madam,</p>
+                <p>
+                    With reference to the policy of the bank, I wish to apply
+                    for staff vehicle loan of<br />
+                    NPR
+                    <input
+                        type="text"
+                        class="form-control d-inline-block w-25"
+                    />
+                    (In Words Nepalese Rupees
+                    <input
+                        type="text"
+                        class="form-control d-inline-block w-50"
+                    />)<br />
+                    as per the attached quotation for the period of
+                    <input
+                        type="text"
+                        class="form-control d-inline-block w-15"
+                    />
+                    years.
+                </p>
+            </div>
+
+            <div class="quotation-section mb-3">
+                <p>
+                    1. Quotation Amount:
+                    <input type="text" class="form-control" />
+                </p>
+                <p>
+                    2. Quotation Date:
+                    <input type="date" class="form-control" />
+                </p>
+                <p>
+                    3. Dealer Name: <input type="text" class="form-control" />
+                </p>
+            </div>
+
+            <div class="details-box">
+                <p>► I hereby furnish the details about me, as below:</p>
+                <div class="form-row">
+                    <div class="col-md-6">
+                        <label for="staff-name">1. Name of Staff:</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="staff-name"
+                        />
+                    </div>
+                    <div class="col-md-6">
+                        <label for="designation">2. Designation:</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="designation"
+                        />
+                    </div>
+                    <div class="col-md-6">
+                        <label for="branch-dept">3. Branch/Dept.:</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="branch-dept"
+                        />
+                    </div>
+                    <div class="col-md-6">
+                        <label for="appointment-date"
+                            >4. Initial Appointment Date:</label
+                        >
+                        <input
+                            type="date"
+                            class="form-control"
+                            id="appointment-date"
+                        />
+                    </div>
+                    <div class="col-md-6">
+                        <label for="confirmation-date"
+                            >5. Date of Confirmation:</label
+                        >
+                        <input
+                            type="date"
+                            class="form-control"
+                            id="confirmation-date"
+                        />
+                    </div>
+                    <div class="col-md-6">
+                        <label for="service-period">6. Service Period:</label>
+                        <div class="form-row">
+                            <div class="col-5">
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="service-period-yrs"
+                                    placeholder="Years"
+                                />
+                            </div>
+                            <div class="col-5">
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="service-period-mths"
+                                    placeholder="Months"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="gross-salary"
+                            >7. Present Gross Salary:</label
+                        >
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="gross-salary"
+                        />
+                    </div>
+                    <div class="col-md-12">
+                        <label for="signature">7. Signature:</label>
+                        <input
+                            type="file"
+                            class="form-control"
+                            id="signature"
+                        />
+                        <br />
+                        Application Date:
+                        <input
+                            type="date"
+                            class="form-control d-inline-block w-25"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <div class="hr-section">
+                <div class="hr-section-title">Recommendation by HR</div>
+                <p>
+                    Mr./ Mrs./Miss.
+                    <input
+                        type="text"
+                        class="form-control d-inline-block w-25"
+                    />
+                    does not have outstanding/has outstanding on the following
+                    head as of
+                    <input
+                        type="text"
+                        class="form-control d-inline-block w-25"
+                    />.
+                </p>
+                <p>Other Loans outstanding if any</p>
+                <div class="loan-details">
+                    <div class="form-row">
+                        <div class="col-md-4">
+                            <input
+                                type="text"
+                                class="form-control"
+                                placeholder="Head"
+                            />
+                        </div>
+                        <div class="col-md-4">
+                            <input
+                                type="text"
+                                class="form-control"
+                                placeholder="Outstanding"
+                            />
+                        </div>
+                        <div class="col-md-4">
+                            <input
+                                type="text"
+                                class="form-control"
+                                placeholder="Monthly Deduction"
+                            />
+                        </div>
+                    </div>
+                    <p>
+                        Gross Monthly Salary (A)
+                        <input
+                            type="text"
+                            class="form-control d-inline-block w-25"
+                        />
+                    </p>
+                    <p>
+                        Monthly Total Deduction (B)
+                        <input
+                            type="text"
+                            class="form-control d-inline-block w-25"
+                        />
+                    </p>
+                    <p>
+                        Home Take Pay after Deduction (Y = A - B):
+                        <input
+                            type="text"
+                            class="form-control d-inline-block w-25"
+                        />
+                    </p>
+                </div>
+            </div>
+
+            <div class="loan-history">
+                <p>
+                    <strong
+                        >Vehicle Loan Advance Detail (Previous If Any)</strong
+                    >
+                </p>
+                <p>
+                    Number of times Vehicle Loan taken
+                    <input
+                        type="text"
+                        class="form-control d-inline-block w-25"
+                    />
+                    Last Vehicle Loan Disbursed Date:
+                    <input
+                        type="date"
+                        class="form-control d-inline-block w-25"
+                    />
+                </p>
+                <p>
+                    Last Vehicle Loan Settled Date:
+                    <input type="date" class="form-control" />
+                </p>
+            </div>
+
+            <div class="eligibility">
+                <p>
+                    ► Eligible loan amount for staff vehicle loan: 24 months
+                    gross salary or 90% of the vehicle price whichever is lower
+                </p>
+                <div class="form-check">
+                    <input
+                        type="checkbox"
+                        class="form-check-input"
+                        id="gross-salary-checkbox"
+                    />
+                    <label class="form-check-label" for="gross-salary-checkbox"
+                        >Gross Salary per month × 24 months =
+                        <input
+                            type="text"
+                            class="form-control d-inline-block w-25"
+                    /></label>
+                </div>
+                <div class="form-check">
+                    <input
+                        type="checkbox"
+                        class="form-check-input"
+                        id="quotation-price-checkbox"
+                    />
+                    <label
+                        class="form-check-label"
+                        for="quotation-price-checkbox"
+                        >90% of the Quotation Price =
+                        <input
+                            type="text"
+                            class="form-control d-inline-block w-25"
+                    /></label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bootstrap JS and Popper.js -->
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.4.2/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    </body>
+</html>

@@ -1,0 +1,13 @@
+{
+    "name": "FiscalYearSetup",
+    "alias": "fiscalyearsetup",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "App\\Modules\\FiscalYearSetup\\Providers\\FiscalYearSetupServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

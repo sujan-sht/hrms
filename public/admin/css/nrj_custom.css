@@ -1,0 +1,43 @@
+/* ------------------------------------
+ *
+ *  @author Er. Niraj Thike
+ *  @link thikeniraj.com.np
+ *  @version v1.0.0
+ *
+ * ------------------------------------ */
+
+.img-center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 46%;
+}
+
+.bg-none {
+    height: auto !important;
+    background-image: none !important;
+}
+
+.progress {
+    height: 10px;
+}
+
+.darbandi_imp_exp {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.darbandi_imp_exp button {
+    margin-right: 20px;
+}
+
+.fc-button-group button,
+.fc-today-button {
+    text-transform: capitalize;
+}
+
+.fc-icon-right-single-arrow:after,
+.fc-icon-left-single-arrow:after {
+    top: -50% !important;
+}

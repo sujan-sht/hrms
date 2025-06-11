@@ -1,0 +1,13 @@
+{
+    "name": "Insurance",
+    "alias": "insurance",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "App\\Modules\\Insurance\\Providers\\InsuranceServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

@@ -1,0 +1,13 @@
+{
+    "name": "EmployeeMassIncrement",
+    "alias": "employeemassincrement",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "App\\Modules\\EmployeeMassIncrement\\Providers\\EmployeeMassIncrementServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

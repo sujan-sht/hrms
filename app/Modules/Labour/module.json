@@ -1,0 +1,13 @@
+{
+    "name": "Labour",
+    "alias": "labour",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "App\\Modules\\Labour\\Providers\\LabourServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

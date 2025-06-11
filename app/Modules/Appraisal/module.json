@@ -1,0 +1,13 @@
+{
+    "name": "Appraisal",
+    "alias": "appraisal",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "App\\Modules\\Appraisal\\Providers\\AppraisalServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

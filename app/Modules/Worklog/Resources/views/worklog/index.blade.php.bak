@@ -1,0 +1,176 @@
+@extends('admin::layout')
+@section('title') Work Log @stop
+
+@section('breadcrum')
+<a href="{{ route('worklog.index') }}" class="breadcrumb-item">Work Log</a>
+<a class="breadcrumb-item active">List</a>
+@endsection
+
+@section('script')
+<script src="{{ asset('admin/global/js/plugins/tables/datatables/datatables.min.js') }}"></script>
+<script src="{{ asset('admin/global/js/plugins/forms/selects/select2.min.js') }}"></script>
+@stop
+
+@section('content')
+
+@php
+$colors = ['Rejected' => 'danger', 'Pending' => 'warning', 'Completed' => 'success', 'Todo' => 'warning', 'In Progress' => 'info', 'Done' => 'success'];
+@endphp
+
+@inject('menuRoles', '\App\Modules\User\Services\CheckUserRoles')
+
+@include('worklog::worklog.partial.filter')
+
+<div class="card card-body">
+    <div class="media align-items-center align-items-md-start flex-column flex-md-row">
+        <a href="#" class="text-teal mr-md-3 align-self-md-center mb-3 mb-md-0">
+            <i class="icon-gallery text-success-400 border-success-400 border-3 rounded-round p-2"></i>
+        </a>
+        <div class="media-body text-center text-md-left">
+            <h6 class="media-title font-weight-semibold">List of Work Logs</h6>
+            All the Work Logs Information will be listed below. You can Create and Modify the data.
+        </div>
+
+        @if ($menuRoles->assignedRoles('worklog.create'))
+        <div class="mt-1 mr-2">
+            <a href="{{ route('worklog.create') }}" class="btn btn-success"><i class="icon-plus2"></i> Add</a>
+        </div>
+        @endif
+        <div class="list-icons mt-2">
+            <div class="dropdown position-static">
+                <a href="#" class="list-icons-item" data-toggle="dropdown" aria-expanded="false">
+                    <i class="icon-more2"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <a href="{{ route('exportWorklogReport', request()->all()) }}" class="dropdown-item">
+                        <i class="icon-file-excel text-success"></i> Export
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr class="text-light btn-slate">
+                <th>S.N</th>
+                <th>Employee Name</th>
+                <th>Title</th>
+                <th>Project</th>
+                <th>Date</th>
+                <th>Hours</th>
+                <th>Status</th>
+                @if ($menuRoles->assignedRoles('worklog.edit') || $menuRoles->assignedRoles('worklog.delete'))
+                <th width="200px" class="text-center">Action</th>
+                @endif
+            </tr>
+        </thead>
+        <tbody class="tbody">
+            @if ($worklogs->total() != 0)
+            @foreach ($worklogs as $key => $item)
+            <tr>
+                <td>#{{ $worklogs->firstItem() + $key }}</td>
+                <td>
+                    <div class="media">
+                        <div class="mr-3">
+                            <a href="#">
+                                <img src="{{ optional($item->employee)->getImage() }}" class="rounded-circle" width="40" height="40" alt="">
+                            </a>
+                        </div>
+                        <div class="media-body">
+                            <div class="media-title font-weight-semibold">
+                                {{ optional($item->employee)->getFullName() }}
+                            </div>
+                            <span class="text-muted">{{ optional($item->employee)->official_email ?? optional($item->employee)->personal_email }}</span>
+                        </div>
+                    </div>
+                </td>
+                <td>{{ $item->title }}</td>
+                <td>{{ optional($item->project)->dropvalue }}</td>
+                <td>{{ date('M d, Y', strtotime($item->date)) }}</td>
+                <td>{{ $item->hours ?? 0 }}</td>
+
+                <td class="badgeContainer">
+                    <span class="badge badge-{{ $colors[$item->getStatus() ?? 'Pending'] }}">{{ $item->getStatus() }}</span>
+                </td>
+
+                @if ($menuRoles->assignedRoles('worklog.edit') || $menuRoles->assignedRoles('worklog.delete'))
+                <td class="text-center">
+                    <a class="btn btn-outline-secondary btn-icon mx-1 updateStatusClick" data-toggle="modal" data-target="#updateStatus" link="{{ route('attendanceRequest.updateStatus', $item->id) }}" data-id="{{ $item->id }}" data-value="{{ $item->status }}" data-placement="bottom" data-popup="tooltip" data-original-title="Update Status">
+                        <i class="icon-flag3"></i>
+                    </a>
+                    @if ($menuRoles->assignedRoles('worklog.edit'))
+                    <a class="btn btn-outline-primary btn-icon mx-1" href="{{ route('worklog.edit', $item->id) }}" data-popup="tooltip" data-original-title="Edit" data-placement="bottom">
+                        <i class="icon-pencil7"></i>
+                    </a>
+                    @endif
+                    @if ($menuRoles->assignedRoles('worklog.delete'))
+                    <a data-toggle="modal" data-target="#modal_theme_warning" class="btn btn-outline-danger btn-icon mx-1 confirmDelete" link="{{ route('worklog.delete', $item->id) }}" data-popup="tooltip" data-original-title="Delete" data-placement="bottom">
+                        <i class="icon-trash-alt"></i>
+                    </a>
+                    @endif
+                </td>
+                @endif
+            </tr>
+            @endforeach
+            @else
+            <tr>
+                <td class="">No Worklog Found !!!</td>
+            </tr>
+            @endif
+        </tbody>
+
+    </table>
+    <span style="margin: 5px;float: right;">
+        @if ($worklogs->total() != 0)
+        {{ $worklogs->links() }}
+        @endif
+    </span>
+</div>
+
+
+
+<!-- popup modal -->
+<div id="updateStatus" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-secondary text-white">
+                <h5 class="modal-title">Update Status</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {!! Form::open([
+                'route' => 'worklog.updateStatus',
+                'method' => 'PUT',
+                'class' => 'form-horizontal',
+                'role' => 'form',
+                ]) !!}
+                <input type="hidden" name="id" class="updateid">
+                <div class="form-group row">
+                    <label class="col-form-label col-lg-3">Status :</label>
+                    <div class="col-lg-9">
+                        {!! Form::select('status', $statusList, null, ['id' => 'worklogStatus', 'class' => 'form-control']) !!}
+                    </div>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn bg-success text-white">Save Changes</button>
+                </div>
+                {!! Form::close() !!}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).on('click', '.updateStatusClick', function() {
+        let id = $(this).data('id');
+        $('.updateid').val(id);
+        $('#worklogStatus').val($(this).attr('data-value'));
+    })
+</script>
+
+@endsection

@@ -1,0 +1,13 @@
+{
+    "name": "BusinessTrip",
+    "alias": "businesstrip",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "App\\Modules\\BusinessTrip\\Providers\\BusinessTripServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}
